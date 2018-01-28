@@ -1,3 +1,6 @@
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.ObjectMapper
+
 import java.time.LocalDate
 
 /**
@@ -6,21 +9,23 @@ import java.time.LocalDate
  */
 class JacksonClassGenerator {
 
-    static ClassName = "BookEntity"
+    static class ClassDescription {
 
-    static ClassDescription = [
-            'id': 'Integer',
-            'title': 'String',
-            'author': 'String',
-            'totalPagesCount': 'Integer',
-            'coverImage': 'String'
-    ]
+        @JsonProperty("name")
+        String className
+        @JsonProperty("description")
+        Map<String, String> classDescription
+    }
 
     static void main(String[] args) {
+        ClassDescription classDescription = new ObjectMapper().readValue(
+                new File('description.json'),
+                ClassDescription
+        )
 
         new JacksonClassGenerator(
-                ClassName,
-                ClassDescription
+                classDescription.className,
+                classDescription.classDescription
         ).generate()
     }
 
