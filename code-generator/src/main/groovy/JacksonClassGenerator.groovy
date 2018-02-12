@@ -77,8 +77,10 @@ ${generateFilledStaticBuilder()}
 
 ${generateBuilder()}
 }"""
-        def file = new File("out/${className}.java.gen")
-        file.text = classDef
+        def file = new File("out/${className}.java.gen", )
+        file.withWriter('UTF-8') { writer ->
+            writer.write(classDef)
+        }
     }
 
     private String generateFields() {
