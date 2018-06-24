@@ -27,6 +27,14 @@ class Utils {
         }
     }
 
+    static fromLowerCase(String str) {
+        if (str.length() == 0) {
+            str
+        } else {
+            str.substring(0, 1).toLowerCase() + str.substring(1)
+        }
+    }
+
     static transform(List elements, Closure leadElementTransform, Closure elementTransform) {
         if (elements.size() == 0) {
             return []
@@ -43,5 +51,17 @@ class Utils {
 
     static splitCamelCaseToWords(String str) {
         str.split("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])")
+    }
+
+    static toCamelCase(String snakeCaseStr) {
+        def snakeCaseTransformer = { String str -> str.split('_').collect{ fromUpperCase(it) }.join('') }
+        fromLowerCase(snakeCaseTransformer(snakeCaseStr))
+    }
+
+    static toFile(String filePath, String text) {
+        def file = new File(filePath)
+        file.withWriter('UTF-8') { writer ->
+            writer.write(text)
+        }
     }
 }

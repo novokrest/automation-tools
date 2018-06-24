@@ -1,6 +1,3 @@
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.ObjectMapper
-
 import java.time.LocalDate
 
 /**
@@ -9,24 +6,12 @@ import java.time.LocalDate
  */
 class JacksonClassGenerator {
 
-    static class ClassDescription {
-
-        @JsonProperty("name")
-        String className
-        @JsonProperty("description")
-        Map<String, String> classDescription
-    }
-
     static void main(String[] args) {
-        ClassDescription classDescription = new ObjectMapper().readValue(
-                new File('description.json'),
-                ClassDescription
-        )
-
-        new JacksonClassGenerator(
-                classDescription.className,
-                classDescription.classDescription
-        ).generate()
+        def descriptionFile = args.length == 0 ? 'classes.json' : args[1]
+        def parser = new ClassDescriptionParser(descriptionFile)
+        parser.parseClasses().classDescriptions.forEach {
+            new JacksonClassGenerator(it.className, it.classDescription).generate()
+        }
     }
 
     private final String className
@@ -161,7 +146,7 @@ return $name;
 
         """@Override
     public String toString() {
-        return "$className" +
+        return "$className={" +
                 ${fields}
                 '}';
     }"""

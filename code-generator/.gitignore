@@ -4,3 +4,5 @@ out/
 /description.json
 build/
 *.iml
+/classes.json
+/enums.json
