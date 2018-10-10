@@ -15,7 +15,7 @@ class JacksonEnumGenerator {
 
     void generate(EnumDescription enumDescription) {
         def now = ZonedDateTime.now()
-        def enumValueDefs = enumDescription.values.collect{generateEnumValueDef(enumDescription.name, it)}.join(",\n")
+        def enumValueDefs = enumDescription.values.collect{generateEnumValueDef(it)}.join(",\n")
 
         def definition = """
 
@@ -49,50 +49,33 @@ public enum ${enumDescription.name} implements Enums.StringRepr {
     }
     
     @JsonValue
-    @Nonnull
     @Override
+    @Nonnull
     public String getCode() {
         return code;
     }
     
-    /**
-     * Выполнить действие над элементом перечисления, в зависимости от Посетителя.
-     *
-     * @param visitor посетитель
-     * @param <V>     действие, характерное для даного Посетителя
-     * @return действие, характерное для даного Посетителя
-     */
-    public abstract <V> V visit(${enumDescription.name}Visitor<V> visitor);
-    
-    @Nonnull
-    @Override
-    public String toString() {
-        return "${enumDescription.name}{" + 
-               "code=" + code +
-               '}';
-    }
-    
     @JsonCreator
-    public static ${enumDescription.name} byCode(@Nonnull String code) {
+    public ${enumDescription.name} byCode(@Nonnull String code) {
         return Enums.byCode(${enumDescription.name}.class, code);
     }
 }
 """
-        Utils.toFile("out/" + enumDescription.name, definition)
-
-        new EnumVisitorGenerator().generate(enumDescription)
+        toFile(enumDescription.name, definition)
     }
 
-    static String generateEnumValueDef(String enumName, EnumValue enumValue) {
+    static String generateEnumValueDef(EnumValue enumValue) {
         """
     /**
      * ${enumValue.javadoc}
      */
-    ${enumValue.name.toUpperCase()}("${enumValue.repr}") {
-        @Override
-        public <V> V visit(${enumName}Visitor<V> visitor) {
-            return visitor.${Utils.toCamelCase(enumValue.name.toLowerCase())}();
+    ${enumValue.name.toUpperCase()}("${enumValue.repr}")"""
+    }
+
+    static void toFile(String enumName, String enumDef) {
+        def file = new File("out/${enumName}.java.gen", )
+        file.withWriter('UTF-8') { writer ->
+            writer.write(enumDef)
         }
-    }"""
     }
 }

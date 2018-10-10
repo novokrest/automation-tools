@@ -136,17 +136,19 @@ return $name;
     }
 
     private String generateToString() {
+        def leadAppostrof = { type -> type == "String" ? "'" : "" }
+        def tailAppostrof = { type -> type == "String" ? " '\\'' +" : "" }
         def fieldStrings = Utils.transform(
-                classDescription.collect {it.key },
-                { name -> """\"$name=\" + $name +""" },
-                { name -> """\", $name=\" + $name +""" },
+                classDescription.collect { [it.key, it.value] },
+                { name, type -> """\"$name=${leadAppostrof(type)}\" + $name +${tailAppostrof(type)}""" },
+                { name, type -> """\", $name=${leadAppostrof(type)}\" + $name +${tailAppostrof(type)}""" },
         )
 
         def fields = String.join("\n", fieldStrings)
 
         """@Override
     public String toString() {
-        return "$className={" +
+        return "$className${'{'}" +
                 ${fields}
                 '}';
     }"""

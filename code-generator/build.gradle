@@ -24,7 +24,7 @@ sourceSets.main.groovy {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'JacksonClassGenerator'
+        attributes 'Main-Class': 'Main'
     }
 }
 
