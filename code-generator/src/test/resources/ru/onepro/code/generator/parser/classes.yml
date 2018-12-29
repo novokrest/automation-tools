@@ -1,0 +1,9 @@
+classes:
+- name: Stub
+  fields:
+    id: Long
+    title: String
+    parent: Stub
+  required:
+    - id
+    - title

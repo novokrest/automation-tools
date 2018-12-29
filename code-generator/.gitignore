@@ -6,3 +6,4 @@ build/
 *.iml
 /classes.json
 /enums.json
+/input/

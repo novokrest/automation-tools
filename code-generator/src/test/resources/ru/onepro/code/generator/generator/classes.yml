@@ -1,0 +1,9 @@
+classes:
+- name: Node
+  fields:
+    id: Long
+    title: String
+    parent: Node
+  required:
+    - id
+    - title
