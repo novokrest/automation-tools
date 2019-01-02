@@ -146,13 +146,19 @@ object ClassWriter {
 
             constructor.parameters.forEach {
                 writer.writeWithSemicolon(
-                        ClassUtils.concatTokens("this.${it.name}", "=", it.name)
+                        ClassUtils.concatTokens("this.${it.name}", "=", wrapNameWithRequireNonnull(it))
                 )
             }
 
             writer.write("}")
         }
 
+    }
+
+    private fun wrapNameWithRequireNonnull(parameter: ParameterModel): String = if (parameter.required) {
+        "requireNonNull(${parameter.name}, \"${parameter.name}\")"
+    } else {
+        parameter.name
     }
 
     private fun writeGetter(writer: CodeWriter, getter: GetterModel) {

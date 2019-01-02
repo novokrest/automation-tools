@@ -23,50 +23,53 @@ object ClassGenerator {
 
     private fun buildClassModel(classDescription: ClassDescription): ClassModel {
         val className = classDescription.name
-        val fieldModels = classDescription.fields.map { buildFieldModel(name = it.key, type = it.value) }
-        val isFieldRequired: (FieldModel) -> Boolean = { fieldModel -> classDescription.required.contains(fieldModel.name) }
-        val builderClassModel = buildBuilderClassModel(className, fieldModels, isFieldRequired)
+        val fieldModels = classDescription.fields.map{
+            buildFieldModel(name = it.key, type = it.value, isFieldRequired = classDescription.required.contains(it.key))
+        }
+        val builderClassModel = buildBuilderClassModel(className, fieldModels)
         return ClassModel(
                 name = className,
                 modifiers = listOf(Modifier.PUBLIC),
                 fields = fieldModels,
-                constructor = buildConstructorModel(fieldModels, isFieldRequired),
-                getters = fieldModels.map { buildGetterModel(it, isFieldRequired) },
+                constructor = buildConstructorModel(fieldModels),
+                getters = fieldModels.map { buildGetterModel(it) },
                 methods = buildEqualsHashCodeToStringMethod(className, fieldModels) + buildBuilderFactoryMethods(className = className, builderClassModel = builderClassModel),
                 nestedClasses = listOf(builderClassModel)
         )
     }
 
-    private fun buildFieldModel(name: String, type: String): FieldModel {
+    private fun buildFieldModel(name: String, type: String, isFieldRequired: Boolean): FieldModel {
         return FieldModel(
                 name = name,
                 type = type,
-                modifiers = listOf(Modifier.PRIVATE, Modifier.FINAL)
+                modifiers = listOf(Modifier.PRIVATE, Modifier.FINAL),
+                required = isFieldRequired
         )
     }
 
-    private fun buildConstructorModel(fieldModels: List<FieldModel>, isFieldRequired: (FieldModel) -> Boolean): ConstructorModel {
+    private fun buildConstructorModel(fieldModels: List<FieldModel>): ConstructorModel {
         return ConstructorModel(
-                parameters = fieldModels.map { buildConstructorParameterModel(it, isFieldRequired)},
+                parameters = fieldModels.map { buildConstructorParameterModel(it)},
                 modifiers = listOf(Modifier.PRIVATE)
         )
     }
 
-    private fun buildConstructorParameterModel(fieldModel: FieldModel, isFieldRequired: (FieldModel) -> Boolean): ParameterModel {
+    private fun buildConstructorParameterModel(fieldModel: FieldModel): ParameterModel {
         return ParameterModel(
                 name = fieldModel.name,
                 type = fieldModel.type,
-                annotations = getAnnotationsFromFieldRequirement(fieldModel, isFieldRequired)
+                annotations = getAnnotationsFromFieldRequirement(fieldModel.required),
+                required = fieldModel.required
         )
     }
 
-    private fun buildGetterModel(fieldModel: FieldModel, isFieldRequired: (FieldModel) -> Boolean): GetterModel {
+    private fun buildGetterModel(fieldModel: FieldModel): GetterModel {
         return GetterModel(
                 fieldName = fieldModel.name,
                 fieldType = fieldModel.type,
                 modifiers = listOf(Modifier.PUBLIC),
                 annotations = listOf(AnnotationModel.NONNULL),
-                asOptional = !isFieldRequired(fieldModel)
+                asOptional = !fieldModel.required
         )
     }
 
@@ -81,7 +84,8 @@ object ClassGenerator {
                                         ParameterModel(
                                                 name = "obj",
                                                 type = "Object",
-                                                annotations = emptyList()
+                                                annotations = emptyList(),
+                                                required = true
                                         )
                                 ),
                                 returnType = "boolean",
@@ -134,7 +138,8 @@ object ClassGenerator {
                                 parameters = listOf(ParameterModel(
                                         name = "copy",
                                         type = className,
-                                        annotations = listOf(AnnotationModel.NONNULL)
+                                        annotations = listOf(AnnotationModel.NONNULL),
+                                        required = true
                                 )),
                                 returnType = builderClassModel.name
                         ),
@@ -144,8 +149,7 @@ object ClassGenerator {
     }
 
     private fun buildBuilderClassModel(ownerClassName: String,
-                                       fieldModels: List<FieldModel>,
-                                       isFieldRequired: (FieldModel) -> Boolean): ClassModel {
+                                       fieldModels: List<FieldModel>): ClassModel {
         val builderClassName = "Builder"
         val builderFields = fieldModels.map { it.withoutModifier(Modifier.FINAL) }
         return ClassModel(
@@ -154,17 +158,16 @@ object ClassGenerator {
                 fields = builderFields,
                 constructor = ConstructorModel(emptyList(), listOf(Modifier.PRIVATE)),
                 getters = emptyList(),
-                methods = buildBuilderMethodModels(ownerClassName, builderClassName, builderFields, isFieldRequired),
+                methods = buildBuilderMethodModels(ownerClassName, builderClassName, builderFields),
                 nestedClasses = emptyList()
         )
     }
 
     private fun buildBuilderMethodModels(ownerClassName: String,
                                          builderClassName: String,
-                                         builderFields: List<FieldModel>,
-                                         isFieldRequired: (FieldModel) -> Boolean): List<WritableMethod> {
+                                         builderFields: List<FieldModel>): List<WritableMethod> {
         val methods = mutableListOf<WritableMethod>()
-        methods.addAll(builderFields.map { WithMethod(buildBuilderMethodModel(builderClassName, it, isFieldRequired(it))) })
+        methods.addAll(builderFields.map { WithMethod(buildBuilderMethodModel(builderClassName, it)) })
         methods.add(
                 BuilderBuildMethod(
                         MethodModel(
@@ -180,24 +183,21 @@ object ClassGenerator {
         return methods
     }
 
-    private fun buildBuilderMethodModel(builderClassName: String, fieldModel: FieldModel, fieldRequired: Boolean): MethodModel {
+    private fun buildBuilderMethodModel(builderClassName: String, fieldModel: FieldModel): MethodModel {
         return MethodModel(
                 name = "with" + StringUtils.fromUpperCase(fieldModel.name),
                 modifiers = listOf(Modifier.PUBLIC),
-                annotations = getAnnotationsFromFieldRequirement(fieldRequired),
+                annotations = getAnnotationsFromFieldRequirement(fieldModel.required),
                 parameters = listOf(
                         ParameterModel(
                                 name = fieldModel.name,
                                 type = fieldModel.type,
-                                annotations = getAnnotationsFromFieldRequirement(fieldRequired)
+                                annotations = getAnnotationsFromFieldRequirement(fieldModel.required),
+                                required =  fieldModel.required
                         )
                 ),
                 returnType = builderClassName
         )
-    }
-
-    private fun getAnnotationsFromFieldRequirement(fieldModel: FieldModel, isFieldRequired: (FieldModel) -> Boolean): List<AnnotationModel> {
-        return getAnnotationsFromFieldRequirement(isFieldRequired(fieldModel))
     }
 
     private fun getAnnotationsFromFieldRequirement(fieldRequired: Boolean): List<AnnotationModel> {

@@ -17,21 +17,24 @@ data class ClassModel(
 data class FieldModel(
         val name: String,
         val type: String,
-        val modifiers: List<Modifier>
+        val modifiers: List<Modifier>,
+        val required: Boolean
 )
 
 fun FieldModel.withoutModifier(vararg modifiersToRemove: Modifier): FieldModel =
         FieldModel(
                 name = this.name,
                 type = this.type,
-                modifiers = this.modifiers.filter { !modifiersToRemove.contains(it) }
+                modifiers = this.modifiers.filter { !modifiersToRemove.contains(it) },
+                required = this.required
         )
 
 fun FieldModel.withoutModifier(modifiersToRemove: List<Modifier>): FieldModel =
         FieldModel(
                 name = this.name,
                 type = this.type,
-                modifiers = this.modifiers.filter { !modifiersToRemove.contains(it) }
+                modifiers = this.modifiers.filter { !modifiersToRemove.contains(it) },
+                required = this.required
         )
 
 data class ConstructorModel(
@@ -59,7 +62,8 @@ data class MethodModel (
 data class ParameterModel(
         val name: String,
         val type: String,
-        val annotations: List<AnnotationModel>
+        val annotations: List<AnnotationModel>,
+        val required: Boolean
 )
 
 data class AnnotationModel(

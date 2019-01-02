@@ -8,26 +8,34 @@ public class PaymentRequestEntity {
 
 private final Long id;
 
-private final String request;
+private final String requestAuthHeader;
+
+private final String requestBody;
+
+private final String requestHash;
 
 private final ZonedDateTime createdAt;
 
 private final ZonedDateTime updatedAt;
 
-private final String status;
+private final PaymentRequestProcessStatus processStatus;
 
 private PaymentRequestEntity(
 @Nonnull Long id,
-@Nonnull String request,
+@Nonnull String requestAuthHeader,
+@Nonnull String requestBody,
+@Nonnull String requestHash,
 @Nonnull ZonedDateTime createdAt,
 @Nonnull ZonedDateTime updatedAt,
-@Nonnull String status
+@Nonnull PaymentRequestProcessStatus processStatus
 ) {
 this.id = id;
-this.request = request;
+this.requestAuthHeader = requestAuthHeader;
+this.requestBody = requestBody;
+this.requestHash = requestHash;
 this.createdAt = createdAt;
 this.updatedAt = updatedAt;
-this.status = status;
+this.processStatus = processStatus;
 }
 
 @Nonnull
@@ -36,8 +44,18 @@ return id;
 }
 
 @Nonnull
-public String getRequest() {
-return request;
+public String getRequestAuthHeader() {
+return requestAuthHeader;
+}
+
+@Nonnull
+public String getRequestBody() {
+return requestBody;
+}
+
+@Nonnull
+public String getRequestHash() {
+return requestHash;
 }
 
 @Nonnull
@@ -51,8 +69,8 @@ return updatedAt;
 }
 
 @Nonnull
-public String getStatus() {
-return status;
+public PaymentRequestProcessStatus getProcessStatus() {
+return processStatus;
 }
 
 @Override
@@ -65,15 +83,17 @@ return false;
 }
 PaymentRequestEntity other = (PaymentRequestEntity) obj;
 return Objects.equals(id, other.id) &&
-Objects.equals(request, other.request) &&
+Objects.equals(requestAuthHeader, other.requestAuthHeader) &&
+Objects.equals(requestBody, other.requestBody) &&
+Objects.equals(requestHash, other.requestHash) &&
 Objects.equals(createdAt, other.createdAt) &&
 Objects.equals(updatedAt, other.updatedAt) &&
-Objects.equals(status, other.status);
+Objects.equals(processStatus, other.processStatus);
 }
 
 @Override
 public int hashCode() {
-return Objects.hash(id, request, createdAt, updatedAt, status);
+return Objects.hash(id, requestAuthHeader, requestBody, requestHash, createdAt, updatedAt, processStatus);
 }
 
 @Nonnull
@@ -81,10 +101,12 @@ return Objects.hash(id, request, createdAt, updatedAt, status);
 public String toString() {
 return "PaymentRequestEntity{" +
 "id=" + id +
-", request='" + request + '\'' +
+", requestAuthHeader='" + requestAuthHeader + '\'' +
+", requestBody='" + requestBody + '\'' +
+", requestHash='" + requestHash + '\'' +
 ", createdAt=" + createdAt +
 ", updatedAt=" + updatedAt +
-", status='" + status + '\'' +
+", processStatus=" + processStatus +
 '}';
 }
 
@@ -97,20 +119,24 @@ return new Builder();
 public static Builder builder(@Nonnull PaymentRequestEntity copy) {
 Builder builder = new Builder();
 builder.id = copy.id;
-builder.request = copy.request;
+builder.requestAuthHeader = copy.requestAuthHeader;
+builder.requestBody = copy.requestBody;
+builder.requestHash = copy.requestHash;
 builder.createdAt = copy.createdAt;
 builder.updatedAt = copy.updatedAt;
-builder.status = copy.status;
+builder.processStatus = copy.processStatus;
 return builder;
 }
 
 public static class Builder {
 
 private Long id;
-private String request;
+private String requestAuthHeader;
+private String requestBody;
+private String requestHash;
 private ZonedDateTime createdAt;
 private ZonedDateTime updatedAt;
-private String status;
+private PaymentRequestProcessStatus processStatus;
 
 private Builder() {
 }
@@ -122,8 +148,20 @@ return this;
 }
 
 @Nonnull
-public Builder withRequest(@Nonnull String request) {
-this.request = request;
+public Builder withRequestAuthHeader(@Nonnull String requestAuthHeader) {
+this.requestAuthHeader = requestAuthHeader;
+return this;
+}
+
+@Nonnull
+public Builder withRequestBody(@Nonnull String requestBody) {
+this.requestBody = requestBody;
+return this;
+}
+
+@Nonnull
+public Builder withRequestHash(@Nonnull String requestHash) {
+this.requestHash = requestHash;
 return this;
 }
 
@@ -140,8 +178,8 @@ return this;
 }
 
 @Nonnull
-public Builder withStatus(@Nonnull String status) {
-this.status = status;
+public Builder withProcessStatus(@Nonnull PaymentRequestProcessStatus processStatus) {
+this.processStatus = processStatus;
 return this;
 }
 
@@ -149,10 +187,12 @@ return this;
 public PaymentRequestEntity build() {
 return new PaymentRequestEntity(
 id,
-request,
+requestAuthHeader,
+requestBody,
+requestHash,
 createdAt,
 updatedAt,
-status
+processStatus
 );
 }
 
