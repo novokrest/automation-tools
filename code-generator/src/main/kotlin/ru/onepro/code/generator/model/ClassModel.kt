@@ -52,7 +52,8 @@ data class MethodModel (
         val modifiers: List<Modifier>,
         val annotations: List<AnnotationModel>,
         val parameters: List<ParameterModel>,
-        val returnType: String
+        val returnType: String,
+        val usedClasses: List<KClass<*>> = emptyList()
 )
 
 data class ParameterModel(
@@ -68,6 +69,7 @@ data class AnnotationModel(
     companion object {
         val NONNULL = AnnotationModel(javax.annotation.Nonnull::class, emptyList())
         val NULLABLE = AnnotationModel(javax.annotation.Nullable::class, emptyList())
+        val OVERRIDE = AnnotationModel(Override::class, emptyList())
     }
 }
 
@@ -129,6 +131,77 @@ class BuilderBuildMethod(override val method: MethodModel,
                 )
         )
         writer.writeWithSemicolon(")")
+    }
+
+}
+
+class EqualsMethod(override val method: MethodModel,
+                   private val className: String,
+                   private val fields: List<FieldModel>) : WritableMethod {
+
+    override fun writeBody(writer: CodeWriter) {
+        val parameter = method.parameters[0]
+
+        writer.write(ClassUtils.concatTokens("if", ClassUtils.concatTokens("(this", "==", "${parameter.name})"), "{"))
+        writer.writeWithSemicolon(ClassUtils.concatTokens("return", "true"))
+        writer.write("}")
+
+        writer.write(ClassUtils.concatTokens("if", ClassUtils.concatTokens("(${parameter.name}", "==", "null", "||", "${parameter.name}.getClass()", "!=", "getClass())"), "{"))
+        writer.writeWithSemicolon(ClassUtils.concatTokens("return", "false"))
+        writer.write("}")
+
+        val otherVarName = "other"
+        writer.writeWithSemicolon(ClassUtils.concatTokens(className, otherVarName, "=", "($className)", parameter.name))
+        writer.writeWithSemicolon(
+                ClassUtils.concatTokens(
+                        "return",
+                        ClassUtils.concatTokens(
+                                fields.map { ClassUtils.concatTokens("Objects.equals(${it.name},", "$otherVarName.${it.name})") },
+                                " &&${System.lineSeparator()}"
+                        )
+                )
+        )
+    }
+
+}
+
+class HashCodeMethod(override val method: MethodModel,
+                     private val fields: List<FieldModel>) : WritableMethod {
+
+    override fun writeBody(writer: CodeWriter) {
+        val fieldsSeparatedByComma = ClassUtils.concatTokens(fields.map { it.name }, ", ")
+        writer.writeWithSemicolon(ClassUtils.concatTokens("return", "Objects.hash($fieldsSeparatedByComma)"))
+    }
+
+}
+
+class ToStringMethod(override val method: MethodModel,
+                     private val className: String,
+                     private val fields: List<FieldModel>) : WritableMethod {
+
+    override fun writeBody(writer: CodeWriter) {
+        writer.write(ClassUtils.concatTokens("return", "\"$className{\"", "+"))
+        if (!fields.isEmpty()) {
+            val firstField = fields[0]
+            writeField(writer, firstField, true)
+            fields.stream().skip(1).forEach { writeField(writer, it, false) }
+        }
+        writer.writeWithSemicolon("\'}\'")
+    }
+
+    private fun writeField(writer: CodeWriter, field: FieldModel, isFirst: Boolean) {
+        val prefix = if (isFirst) "" else ", "
+        val useCommaForValue = field.type == "String"
+        val tokens = mutableListOf<String>()
+        tokens.add("\"$prefix${field.name}=${if (useCommaForValue) "'" else ""}\"")
+        tokens.add("+")
+        tokens.add(field.name)
+        tokens.add("+")
+        if (useCommaForValue) {
+            tokens.add("'\\''")
+            tokens.add("+")
+        }
+        writer.write(ClassUtils.concatTokens(tokens))
     }
 
 }

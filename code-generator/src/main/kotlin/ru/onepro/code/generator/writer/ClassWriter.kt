@@ -1,19 +1,22 @@
 package ru.onepro.code.generator.writer
 
-import ru.onepro.code.generator.model.ClassModel
-import ru.onepro.code.generator.model.GetterModel
-import ru.onepro.code.generator.model.WritableMethod
+import ru.onepro.code.generator.model.*
 import ru.onepro.code.generator.utils.StringUtils
 import java.io.BufferedOutputStream
 import java.io.OutputStream
+import java.time.ZonedDateTime
 import java.util.*
 import kotlin.reflect.KClass
 
 object ClassWriter {
 
+    private val WELL_KNOWN_TYPES = mapOf(
+            "ZonedDateTime" to ZonedDateTime::class
+    )
+
     fun write(classModel: ClassModel, output: OutputStream) {
         CodeWriter(BufferedOutputStream(output)).use { writer ->
-            writer.writeWithSemicolon("package ").writeEmptyLine()
+            writer.writeWithSemicolon(ClassUtils.concatTokens("package", "generated")).writeEmptyLine()
             writeImports(writer, classModel)
             writer.writeEmptyLine()
             writeClass(writer, classModel)
@@ -22,8 +25,8 @@ object ClassWriter {
 
     private fun writeImports(writer: CodeWriter, classModel: ClassModel) {
         val importedClasses: Set<KClass<*>> = collectImports(classModel)
-        importedClasses.forEach {
-            writer.writeWithSemicolon("import ${it.java.canonicalName}")
+        importedClasses.stream().map { it.java.canonicalName }.sorted().forEach {
+            writer.writeWithSemicolon(ClassUtils.concatTokens("import", it))
         }
     }
 
@@ -34,13 +37,27 @@ object ClassWriter {
     }
 
     private fun collectImports(importClasses: MutableSet<KClass<*>>, classModel: ClassModel) {
-        classModel.constructor.parameters.flatMap { it.annotations }.forEach { importClasses.add(it.type) }
-        classModel.getters.flatMap { it.annotations }.forEach { importClasses.add(it.type) }
+        classModel.fields.forEach { addFieldTypeToImport(importClasses, it) }
+        classModel.constructor.parameters.flatMap { it.annotations }.forEach { addAnnotationToImport(importClasses, it) }
+        classModel.getters.flatMap { it.annotations }.forEach { addAnnotationToImport(importClasses, it) }
         if (classModel.getters.any { it.asOptional }) {
             importClasses.add(Optional::class)
         }
-        classModel.methods.flatMap { it.method.annotations }.forEach { importClasses.add(it.type) }
+        classModel.methods.flatMap { it.method.annotations }.forEach { addAnnotationToImport(importClasses, it) }
+        classModel.methods.flatMap { it.method.usedClasses }.forEach { importClasses.add(it) }
         classModel.nestedClasses.forEach { collectImports(importClasses, it) }
+    }
+
+    private fun addFieldTypeToImport(importClasses: MutableSet<KClass<*>>, it: FieldModel) {
+        if (WELL_KNOWN_TYPES.containsKey(it.type)) {
+            importClasses.add(WELL_KNOWN_TYPES[it.type]!!)
+        }
+    }
+
+    private fun addAnnotationToImport(importClasses: MutableSet<KClass<*>>, it: AnnotationModel) {
+        if (!it.type.java.canonicalName.startsWith("java.lang")) {
+            importClasses.add(it.type)
+        }
     }
 
     private fun writeClass(writer: CodeWriter, classModel: ClassModel, separateFieldsWithEmptyLine: Boolean = true) {

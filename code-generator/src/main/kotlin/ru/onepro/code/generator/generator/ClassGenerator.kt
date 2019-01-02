@@ -8,6 +8,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.*
 
 object ClassGenerator {
 
@@ -31,7 +32,7 @@ object ClassGenerator {
                 fields = fieldModels,
                 constructor = buildConstructorModel(fieldModels, isFieldRequired),
                 getters = fieldModels.map { buildGetterModel(it, isFieldRequired) },
-                methods = buildBuilderFactoryMethods(className = className, builderClassModel = builderClassModel),
+                methods = buildEqualsHashCodeToStringMethod(className, fieldModels) + buildBuilderFactoryMethods(className = className, builderClassModel = builderClassModel),
                 nestedClasses = listOf(builderClassModel)
         )
     }
@@ -68,6 +69,51 @@ object ClassGenerator {
                 asOptional = !isFieldRequired(fieldModel)
         )
     }
+
+    private fun buildEqualsHashCodeToStringMethod(className: String, fields: List<FieldModel>): List<WritableMethod> {
+        return listOf(
+                EqualsMethod(
+                        method = MethodModel(
+                                name = "equals",
+                                modifiers = listOf(Modifier.PUBLIC),
+                                annotations = listOf(AnnotationModel.OVERRIDE),
+                                parameters = listOf(
+                                        ParameterModel(
+                                                name = "obj",
+                                                type = "Object",
+                                                annotations = emptyList()
+                                        )
+                                ),
+                                returnType = "boolean",
+                                usedClasses = listOf(Objects::class)
+                        ),
+                        className = className,
+                        fields = fields
+                ),
+                HashCodeMethod(
+                        method = MethodModel(
+                                name = "hashCode",
+                                modifiers = listOf(Modifier.PUBLIC),
+                                annotations = listOf(AnnotationModel.OVERRIDE),
+                                parameters = emptyList(),
+                                returnType = "int"
+                        ),
+                        fields = fields
+                ),
+                ToStringMethod(
+                        method = MethodModel(
+                                name = "toString",
+                                modifiers = listOf(Modifier.PUBLIC),
+                                annotations = listOf(AnnotationModel.NONNULL, AnnotationModel.OVERRIDE),
+                                parameters = emptyList(),
+                                returnType = "String"
+                        ),
+                        className = className,
+                        fields = fields
+                )
+        )
+    }
+
 
     private fun buildBuilderFactoryMethods(className: String, builderClassModel: ClassModel): List<WritableMethod> {
         return listOf(
