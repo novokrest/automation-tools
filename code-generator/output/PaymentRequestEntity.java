@@ -14,28 +14,28 @@ private final String requestBody;
 
 private final String requestHash;
 
+private final PaymentRequestProcessStatus processStatus;
+
 private final ZonedDateTime createdAt;
 
 private final ZonedDateTime updatedAt;
-
-private final PaymentRequestProcessStatus processStatus;
 
 private PaymentRequestEntity(
 @Nonnull Long id,
 @Nonnull String requestAuthHeader,
 @Nonnull String requestBody,
 @Nonnull String requestHash,
+@Nonnull PaymentRequestProcessStatus processStatus,
 @Nonnull ZonedDateTime createdAt,
-@Nonnull ZonedDateTime updatedAt,
-@Nonnull PaymentRequestProcessStatus processStatus
+@Nonnull ZonedDateTime updatedAt
 ) {
-this.id = id;
-this.requestAuthHeader = requestAuthHeader;
-this.requestBody = requestBody;
-this.requestHash = requestHash;
-this.createdAt = createdAt;
-this.updatedAt = updatedAt;
-this.processStatus = processStatus;
+this.id = requireNonNull(id, "id");
+this.requestAuthHeader = requireNonNull(requestAuthHeader, "requestAuthHeader");
+this.requestBody = requireNonNull(requestBody, "requestBody");
+this.requestHash = requireNonNull(requestHash, "requestHash");
+this.processStatus = requireNonNull(processStatus, "processStatus");
+this.createdAt = requireNonNull(createdAt, "createdAt");
+this.updatedAt = requireNonNull(updatedAt, "updatedAt");
 }
 
 @Nonnull
@@ -59,6 +59,11 @@ return requestHash;
 }
 
 @Nonnull
+public PaymentRequestProcessStatus getProcessStatus() {
+return processStatus;
+}
+
+@Nonnull
 public ZonedDateTime getCreatedAt() {
 return createdAt;
 }
@@ -66,11 +71,6 @@ return createdAt;
 @Nonnull
 public ZonedDateTime getUpdatedAt() {
 return updatedAt;
-}
-
-@Nonnull
-public PaymentRequestProcessStatus getProcessStatus() {
-return processStatus;
 }
 
 @Override
@@ -86,14 +86,14 @@ return Objects.equals(id, other.id) &&
 Objects.equals(requestAuthHeader, other.requestAuthHeader) &&
 Objects.equals(requestBody, other.requestBody) &&
 Objects.equals(requestHash, other.requestHash) &&
+Objects.equals(processStatus, other.processStatus) &&
 Objects.equals(createdAt, other.createdAt) &&
-Objects.equals(updatedAt, other.updatedAt) &&
-Objects.equals(processStatus, other.processStatus);
+Objects.equals(updatedAt, other.updatedAt);
 }
 
 @Override
 public int hashCode() {
-return Objects.hash(id, requestAuthHeader, requestBody, requestHash, createdAt, updatedAt, processStatus);
+return Objects.hash(id, requestAuthHeader, requestBody, requestHash, processStatus, createdAt, updatedAt);
 }
 
 @Nonnull
@@ -104,9 +104,9 @@ return "PaymentRequestEntity{" +
 ", requestAuthHeader='" + requestAuthHeader + '\'' +
 ", requestBody='" + requestBody + '\'' +
 ", requestHash='" + requestHash + '\'' +
+", processStatus=" + processStatus +
 ", createdAt=" + createdAt +
 ", updatedAt=" + updatedAt +
-", processStatus=" + processStatus +
 '}';
 }
 
@@ -122,9 +122,9 @@ builder.id = copy.id;
 builder.requestAuthHeader = copy.requestAuthHeader;
 builder.requestBody = copy.requestBody;
 builder.requestHash = copy.requestHash;
+builder.processStatus = copy.processStatus;
 builder.createdAt = copy.createdAt;
 builder.updatedAt = copy.updatedAt;
-builder.processStatus = copy.processStatus;
 return builder;
 }
 
@@ -134,9 +134,9 @@ private Long id;
 private String requestAuthHeader;
 private String requestBody;
 private String requestHash;
+private PaymentRequestProcessStatus processStatus;
 private ZonedDateTime createdAt;
 private ZonedDateTime updatedAt;
-private PaymentRequestProcessStatus processStatus;
 
 private Builder() {
 }
@@ -166,6 +166,12 @@ return this;
 }
 
 @Nonnull
+public Builder withProcessStatus(@Nonnull PaymentRequestProcessStatus processStatus) {
+this.processStatus = processStatus;
+return this;
+}
+
+@Nonnull
 public Builder withCreatedAt(@Nonnull ZonedDateTime createdAt) {
 this.createdAt = createdAt;
 return this;
@@ -178,21 +184,15 @@ return this;
 }
 
 @Nonnull
-public Builder withProcessStatus(@Nonnull PaymentRequestProcessStatus processStatus) {
-this.processStatus = processStatus;
-return this;
-}
-
-@Nonnull
 public PaymentRequestEntity build() {
 return new PaymentRequestEntity(
 id,
 requestAuthHeader,
 requestBody,
 requestHash,
+processStatus,
 createdAt,
-updatedAt,
-processStatus
+updatedAt
 );
 }
 

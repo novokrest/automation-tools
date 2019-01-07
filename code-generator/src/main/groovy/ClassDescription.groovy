@@ -13,6 +13,8 @@ class ClassDescription {
 
 class ClassDescriptionList {
 
+    @JsonProperty("author")
+    String author
     @JsonProperty("classes")
     List<ClassDescription> classDescriptions
 }

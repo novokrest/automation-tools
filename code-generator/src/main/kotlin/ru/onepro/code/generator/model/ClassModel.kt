@@ -6,6 +6,8 @@ import kotlin.reflect.KClass
 
 data class ClassModel(
         val name: String,
+        val javadoc: String,
+        val author: String,
         val modifiers: List<Modifier>,
         val fields: List<FieldModel>,
         val constructor: ConstructorModel,
@@ -18,7 +20,8 @@ data class FieldModel(
         val name: String,
         val type: String,
         val modifiers: List<Modifier>,
-        val required: Boolean
+        val required: Boolean,
+        val javadoc: String
 )
 
 fun FieldModel.withoutModifier(vararg modifiersToRemove: Modifier): FieldModel =
@@ -26,7 +29,8 @@ fun FieldModel.withoutModifier(vararg modifiersToRemove: Modifier): FieldModel =
                 name = this.name,
                 type = this.type,
                 modifiers = this.modifiers.filter { !modifiersToRemove.contains(it) },
-                required = this.required
+                required = this.required,
+                javadoc = this.javadoc
         )
 
 fun FieldModel.withoutModifier(modifiersToRemove: List<Modifier>): FieldModel =
@@ -34,7 +38,8 @@ fun FieldModel.withoutModifier(modifiersToRemove: List<Modifier>): FieldModel =
                 name = this.name,
                 type = this.type,
                 modifiers = this.modifiers.filter { !modifiersToRemove.contains(it) },
-                required = this.required
+                required = this.required,
+                javadoc = this.javadoc
         )
 
 data class ConstructorModel(

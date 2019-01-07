@@ -3,39 +3,26 @@ package generated;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 
-public class OfflineOrder {
-
-private final Long id;
+public class BoardPaymentRequest {
 
 private final String orderId;
 
-private final BigDecimal amount;
+private final MonetaryAmount amount;
 
-private final PayCashCurrency currency;
-
-private final String paymentMethod;
+private final PaymentMethod paymentMethod;
 
 private final String cardCryptogram;
 
-private OfflineOrder(
-@Nonnull Long id,
+private BoardPaymentRequest(
 @Nonnull String orderId,
-@Nonnull BigDecimal amount,
-@Nonnull PayCashCurrency currency,
-@Nonnull String paymentMethod,
+@Nonnull MonetaryAmount amount,
+@Nonnull PaymentMethod paymentMethod,
 @Nonnull String cardCryptogram
 ) {
-this.id = requireNonNull(id, "id");
 this.orderId = requireNonNull(orderId, "orderId");
 this.amount = requireNonNull(amount, "amount");
-this.currency = requireNonNull(currency, "currency");
 this.paymentMethod = requireNonNull(paymentMethod, "paymentMethod");
 this.cardCryptogram = requireNonNull(cardCryptogram, "cardCryptogram");
-}
-
-@Nonnull
-public Long getId() {
-return id;
 }
 
 @Nonnull
@@ -44,17 +31,12 @@ return orderId;
 }
 
 @Nonnull
-public BigDecimal getAmount() {
+public MonetaryAmount getAmount() {
 return amount;
 }
 
 @Nonnull
-public PayCashCurrency getCurrency() {
-return currency;
-}
-
-@Nonnull
-public String getPaymentMethod() {
+public PaymentMethod getPaymentMethod() {
 return paymentMethod;
 }
 
@@ -71,29 +53,25 @@ return true;
 if (obj == null || obj.getClass() != getClass()) {
 return false;
 }
-OfflineOrder other = (OfflineOrder) obj;
-return Objects.equals(id, other.id) &&
-Objects.equals(orderId, other.orderId) &&
+BoardPaymentRequest other = (BoardPaymentRequest) obj;
+return Objects.equals(orderId, other.orderId) &&
 Objects.equals(amount, other.amount) &&
-Objects.equals(currency, other.currency) &&
 Objects.equals(paymentMethod, other.paymentMethod) &&
 Objects.equals(cardCryptogram, other.cardCryptogram);
 }
 
 @Override
 public int hashCode() {
-return Objects.hash(id, orderId, amount, currency, paymentMethod, cardCryptogram);
+return Objects.hash(orderId, amount, paymentMethod, cardCryptogram);
 }
 
 @Nonnull
 @Override
 public String toString() {
-return "OfflineOrder{" +
-"id=" + id +
-", orderId='" + orderId + '\'' +
+return "BoardPaymentRequest{" +
+"orderId='" + orderId + '\'' +
 ", amount=" + amount +
-", currency=" + currency +
-", paymentMethod='" + paymentMethod + '\'' +
+", paymentMethod=" + paymentMethod +
 ", cardCryptogram='" + cardCryptogram + '\'' +
 '}';
 }
@@ -104,12 +82,10 @@ return new Builder();
 }
 
 @Nonnull
-public static Builder builder(@Nonnull OfflineOrder copy) {
+public static Builder builder(@Nonnull BoardPaymentRequest copy) {
 Builder builder = new Builder();
-builder.id = copy.id;
 builder.orderId = copy.orderId;
 builder.amount = copy.amount;
-builder.currency = copy.currency;
 builder.paymentMethod = copy.paymentMethod;
 builder.cardCryptogram = copy.cardCryptogram;
 return builder;
@@ -117,20 +93,12 @@ return builder;
 
 public static class Builder {
 
-private Long id;
 private String orderId;
-private BigDecimal amount;
-private PayCashCurrency currency;
-private String paymentMethod;
+private MonetaryAmount amount;
+private PaymentMethod paymentMethod;
 private String cardCryptogram;
 
 private Builder() {
-}
-
-@Nonnull
-public Builder withId(@Nonnull Long id) {
-this.id = id;
-return this;
 }
 
 @Nonnull
@@ -140,19 +108,13 @@ return this;
 }
 
 @Nonnull
-public Builder withAmount(@Nonnull BigDecimal amount) {
+public Builder withAmount(@Nonnull MonetaryAmount amount) {
 this.amount = amount;
 return this;
 }
 
 @Nonnull
-public Builder withCurrency(@Nonnull PayCashCurrency currency) {
-this.currency = currency;
-return this;
-}
-
-@Nonnull
-public Builder withPaymentMethod(@Nonnull String paymentMethod) {
+public Builder withPaymentMethod(@Nonnull PaymentMethod paymentMethod) {
 this.paymentMethod = paymentMethod;
 return this;
 }
@@ -164,12 +126,10 @@ return this;
 }
 
 @Nonnull
-public OfflineOrder build() {
-return new OfflineOrder(
-id,
+public BoardPaymentRequest build() {
+return new BoardPaymentRequest(
 orderId,
 amount,
-currency,
 paymentMethod,
 cardCryptogram
 );

@@ -3,32 +3,28 @@ package generated;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 
-public class OfflineOrder {
+public class PaymentOrderEntity {
 
 private final Long id;
 
 private final String orderId;
 
-private final BigDecimal amount;
+private final MonetaryAmount amount;
 
-private final PayCashCurrency currency;
-
-private final String paymentMethod;
+private final PaymentMethod paymentMethod;
 
 private final String cardCryptogram;
 
-private OfflineOrder(
+private PaymentOrderEntity(
 @Nonnull Long id,
 @Nonnull String orderId,
-@Nonnull BigDecimal amount,
-@Nonnull PayCashCurrency currency,
-@Nonnull String paymentMethod,
+@Nonnull MonetaryAmount amount,
+@Nonnull PaymentMethod paymentMethod,
 @Nonnull String cardCryptogram
 ) {
 this.id = requireNonNull(id, "id");
 this.orderId = requireNonNull(orderId, "orderId");
 this.amount = requireNonNull(amount, "amount");
-this.currency = requireNonNull(currency, "currency");
 this.paymentMethod = requireNonNull(paymentMethod, "paymentMethod");
 this.cardCryptogram = requireNonNull(cardCryptogram, "cardCryptogram");
 }
@@ -44,17 +40,12 @@ return orderId;
 }
 
 @Nonnull
-public BigDecimal getAmount() {
+public MonetaryAmount getAmount() {
 return amount;
 }
 
 @Nonnull
-public PayCashCurrency getCurrency() {
-return currency;
-}
-
-@Nonnull
-public String getPaymentMethod() {
+public PaymentMethod getPaymentMethod() {
 return paymentMethod;
 }
 
@@ -71,29 +62,27 @@ return true;
 if (obj == null || obj.getClass() != getClass()) {
 return false;
 }
-OfflineOrder other = (OfflineOrder) obj;
+PaymentOrderEntity other = (PaymentOrderEntity) obj;
 return Objects.equals(id, other.id) &&
 Objects.equals(orderId, other.orderId) &&
 Objects.equals(amount, other.amount) &&
-Objects.equals(currency, other.currency) &&
 Objects.equals(paymentMethod, other.paymentMethod) &&
 Objects.equals(cardCryptogram, other.cardCryptogram);
 }
 
 @Override
 public int hashCode() {
-return Objects.hash(id, orderId, amount, currency, paymentMethod, cardCryptogram);
+return Objects.hash(id, orderId, amount, paymentMethod, cardCryptogram);
 }
 
 @Nonnull
 @Override
 public String toString() {
-return "OfflineOrder{" +
+return "PaymentOrderEntity{" +
 "id=" + id +
 ", orderId='" + orderId + '\'' +
 ", amount=" + amount +
-", currency=" + currency +
-", paymentMethod='" + paymentMethod + '\'' +
+", paymentMethod=" + paymentMethod +
 ", cardCryptogram='" + cardCryptogram + '\'' +
 '}';
 }
@@ -104,12 +93,11 @@ return new Builder();
 }
 
 @Nonnull
-public static Builder builder(@Nonnull OfflineOrder copy) {
+public static Builder builder(@Nonnull PaymentOrderEntity copy) {
 Builder builder = new Builder();
 builder.id = copy.id;
 builder.orderId = copy.orderId;
 builder.amount = copy.amount;
-builder.currency = copy.currency;
 builder.paymentMethod = copy.paymentMethod;
 builder.cardCryptogram = copy.cardCryptogram;
 return builder;
@@ -119,9 +107,8 @@ public static class Builder {
 
 private Long id;
 private String orderId;
-private BigDecimal amount;
-private PayCashCurrency currency;
-private String paymentMethod;
+private MonetaryAmount amount;
+private PaymentMethod paymentMethod;
 private String cardCryptogram;
 
 private Builder() {
@@ -140,19 +127,13 @@ return this;
 }
 
 @Nonnull
-public Builder withAmount(@Nonnull BigDecimal amount) {
+public Builder withAmount(@Nonnull MonetaryAmount amount) {
 this.amount = amount;
 return this;
 }
 
 @Nonnull
-public Builder withCurrency(@Nonnull PayCashCurrency currency) {
-this.currency = currency;
-return this;
-}
-
-@Nonnull
-public Builder withPaymentMethod(@Nonnull String paymentMethod) {
+public Builder withPaymentMethod(@Nonnull PaymentMethod paymentMethod) {
 this.paymentMethod = paymentMethod;
 return this;
 }
@@ -164,12 +145,11 @@ return this;
 }
 
 @Nonnull
-public OfflineOrder build() {
-return new OfflineOrder(
+public PaymentOrderEntity build() {
+return new PaymentOrderEntity(
 id,
 orderId,
 amount,
-currency,
 paymentMethod,
 cardCryptogram
 );
