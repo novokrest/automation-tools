@@ -187,7 +187,7 @@ object ClassGenerator {
         return MethodModel(
                 name = "with" + StringUtils.fromUpperCase(fieldModel.name),
                 modifiers = listOf(Modifier.PUBLIC),
-                annotations = getAnnotationsFromFieldRequirement(fieldModel.required),
+                annotations = listOf(AnnotationModel.NONNULL),
                 parameters = listOf(
                         ParameterModel(
                                 name = fieldModel.name,
