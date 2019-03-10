@@ -24,7 +24,7 @@ object ClassGenerator {
     private fun buildClassModel(classDescription: ClassDescription): ClassModel {
         val className = classDescription.name
         val fieldModels = classDescription.fields.map{
-            buildFieldModel(name = it.key, type = it.value, isFieldRequired = classDescription.required.contains(it.key))
+            buildFieldModel(name = it.key, type = it.value, isFieldRequired = classDescription.required?.contains(it.key) ?: true)
         }
         val builderClassModel = buildBuilderClassModel(className, fieldModels)
         return ClassModel(

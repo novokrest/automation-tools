@@ -7,5 +7,5 @@ data class ClassesDescription(
 data class ClassDescription(
         val name: String,
         val fields: Map<String, String>,
-        val required: List<String>
+        val required: List<String>?
 )
