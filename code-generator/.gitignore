@@ -6,4 +6,5 @@ build/
 *.iml
 /classes.json
 /enums.json
+/input/classes.yml
 /output/*.java
