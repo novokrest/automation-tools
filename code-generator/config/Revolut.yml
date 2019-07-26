@@ -1,0 +1,3 @@
+withNonnull: false
+builderMethodPrefix: ''
+isFieldPublic: true
