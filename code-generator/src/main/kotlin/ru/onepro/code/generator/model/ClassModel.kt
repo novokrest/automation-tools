@@ -29,6 +29,14 @@ fun FieldModel.withoutModifier(vararg modifiersToRemove: Modifier): FieldModel =
                 required = this.required
         )
 
+fun FieldModel.withModifierSubstitution(oldModifier: Modifier, newModifier: Modifier): FieldModel =
+        FieldModel(
+                name = this.name,
+                type = this.type,
+                modifiers = this.modifiers.map { if (it == oldModifier) newModifier else it },
+                required = this.required
+        )
+
 fun FieldModel.withoutModifier(modifiersToRemove: List<Modifier>): FieldModel =
         FieldModel(
                 name = this.name,

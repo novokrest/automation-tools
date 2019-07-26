@@ -153,7 +153,7 @@ object ClassGenerator {
                                        fieldModels: List<FieldModel>,
                                        config: Config): ClassModel {
         val builderClassName = "Builder"
-        val builderFields = fieldModels.map { it.withoutModifier(Modifier.FINAL) }
+        val builderFields = fieldModels.map { it.withoutModifier(Modifier.FINAL).withModifierSubstitution(Modifier.PUBLIC, Modifier.PRIVATE) }
         return ClassModel(
                 name = builderClassName,
                 modifiers = listOf(Modifier.PUBLIC, Modifier.STATIC),
