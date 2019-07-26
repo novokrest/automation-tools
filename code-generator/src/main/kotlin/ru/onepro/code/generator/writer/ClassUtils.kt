@@ -24,7 +24,7 @@ object ClassUtils {
     }
 
     fun concatTokens(tokens: List<String>, separator: String = " "): String {
-        return if (tokens.isEmpty()) "" else tokens.reduce { acc, token -> "$acc$separator$token" }
+        return if (tokens.isEmpty()) "" else tokens.filter { it.isNotEmpty() }.reduce { acc, token -> "$acc$separator$token" }
     }
 
 }

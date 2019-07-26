@@ -1,0 +1,167 @@
+classes:
+  - name: CardProcessingEvent
+    fields:
+      id: String
+      authCode: String
+      type: String
+      cardToken: String
+      billAmount: Money
+      eventDateTime: ZonedDateTime
+      createdDateTime: ZonedDateTime
+      originalRequest: String
+  - name: TransactionInfo
+    fields:
+      uniqueNumber: String
+      operationIdentifier: String
+      transactionIdentifierOnline: String
+      authCode: String
+      stan: String
+      status: String
+      type: String
+      dateTime: String
+      qiwiOrPaymentSystemDateTime: String
+      authorizationAmount: Money
+      debitAmount: Money
+      creditAmount: Money
+      settlementAmount: Money
+      commissionAmount: Money
+      qiwiCommissionAmount: Money
+      rrn: String
+      qiwiBankIdentifier: String
+      debitCardToken: String
+      debitWalletId: String
+      debitAccountNumber: String
+      creditCardToken: String
+      creditWalletId: String
+      creditAccountNumber: String
+      fromCountry: String
+      toCountry: String
+      productCategory: String
+      comment: String
+  - name: QiwiOperation
+    fields:
+      operation: Operation
+      lastInClearingFile: boolean
+      clearingFilePath: Path
+  - name: QiwiClearing
+    fields:
+      id: Long
+      fileName: String
+      processStatus: String
+      lastProcessedOperationId: Long
+      createdDateTime: ZonedDateTime
+      updatedDateTime: ZonedDateTime
+  - name: QiwiAuthResponse
+    fields:
+      currentBalance: Money
+      availableBalance: Money
+      reasonCode: Optional<QiwiResponseCode>
+      type: Type
+  - name: QiwiRequest2
+    fields:
+      productId: String
+      personId: String
+      requestId: String
+      cardToken: String
+      authCode: String
+      messageType: String
+      f3: String
+      f4: String
+      f5: String
+      f6: String
+      f7: String
+      f11: String
+      f12: String
+      f18: String
+      f32: String
+      f37: String
+      f41: String  
+      f42: String         
+      f43: String
+      f49: String
+      f50: String
+      f51: String
+  - name: QiwiMerchant
+    fields:
+      number: String
+      mcc: String
+      name: String
+      city: String
+      region: String
+      country: Integer
+      postCode: String
+  - name: QiwiClearingRequest
+    fields:
+      transactionId: Long
+      transactionAmount: MonetaryAmount
+      transactionDate: ZonedDateTime
+      messageType: QiwiMessageType
+      operationType: QiwiOperationType
+      operationStatus: QiwiOperationStatus
+      isReversal: Boolean
+      cardToken: String
+      billAmount: MonetaryAmount
+      settleAmount: MonetaryAmount
+      merchant: QiwiMerchant
+      authCode: String
+      posEntryMode: String
+      posTime: LocalDateTime
+  - name: QiwiOfflineProcessingConfig
+    fields:
+      sftp: SftpConfig
+      obiFilesRemoteDir: String
+  - name: QiwiConfig
+    fields:
+      offlineProcessingConfig: QiwiOfflineProcessingConfig
+  - name: QiwiTransaction
+    fields:
+      transactionId: String
+      obiOperationId: String
+      obiTransactionId: String
+      transactionType: QiwiTransactionType
+      transactionDateTime: ZonedDateTime
+      qiwiTransactionDateTime: ZonedDateTime
+      paymentSystemTransactionDateTime: ZonedDateTime
+      authorizationAmount: BigDecimal
+      authorizationCurrency: BigDecimal
+      debitAmount: BigDecimal
+      debitCurrency: Currency
+      creditAmount: BigDecimal
+      creditCurrency: Currency
+      settlementDebitAmount: BigDecimal
+      settlementDebitCurrency: Currency
+      settlementCreditAmount: BigDecimal
+      settlementCreditCurrency: Currency
+      totalCommissionAmount: BigDecimal
+      totalCommissionCurrency: Currency
+      commissionAmount: BigDecimal
+      commissionCurrency: Currency
+      rrn: String
+      qiwiTransactionId: String
+      debitCardToken: String
+      debitClientId: String
+      debitAccountNumber: String
+      creditCardToken: String
+      creditClientId: String
+      creditAccountNumber: String
+      comment: String
+    required:
+      - transactionId
+      - obiOperationId
+      - obiTransactionId
+      - transactionType
+      - transactionDateTime
+      - debitAmount
+      - debitCurrency
+      - creditAmount
+      - creditCurrency
+      - settlementDebitAmount
+      - settlementDebitCurrency
+      - settlementCreditAmount
+      - settlementCreditCurrency
+      - totalCommissionAmount
+      - totalCommissionCurrency
+      - commissionAmount
+      - commissionCurrency
+      - debitCardToken
+      - debitClientId

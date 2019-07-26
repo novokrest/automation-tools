@@ -12,8 +12,8 @@ import java.util.*
 
 object ClassGenerator {
 
-    fun generate(outputDir: Path, classDescription: ClassDescription): Path {
-        val classModel = buildClassModel(classDescription)
+    fun generate(outputDir: Path, classDescription: ClassDescription, withNonnull: Boolean): Path {
+        val classModel = buildClassModel(classDescription, withNonnull)
         val generatedClassFilePath: Path = Paths.get(outputDir.toString(), "${classModel.name}.java")
         FileOutputStream(File(generatedClassFilePath.toString())).use {
             ClassWriter.write(classModel, it)
@@ -21,19 +21,19 @@ object ClassGenerator {
         return generatedClassFilePath
     }
 
-    private fun buildClassModel(classDescription: ClassDescription): ClassModel {
+    private fun buildClassModel(classDescription: ClassDescription, withNonnull: Boolean): ClassModel {
         val className = classDescription.name
         val fieldModels = classDescription.fields.map{
             buildFieldModel(name = it.key, type = it.value, isFieldRequired = classDescription.required?.contains(it.key) ?: true)
         }
-        val builderClassModel = buildBuilderClassModel(className, fieldModels)
+        val builderClassModel = buildBuilderClassModel(className, fieldModels, withNonnull)
         return ClassModel(
                 name = className,
                 modifiers = listOf(Modifier.PUBLIC),
                 fields = fieldModels,
-                constructor = buildConstructorModel(fieldModels),
-                getters = fieldModels.map { buildGetterModel(it) },
-                methods = buildEqualsHashCodeToStringMethod(className, fieldModels) + buildBuilderFactoryMethods(className = className, builderClassModel = builderClassModel),
+                constructor = buildConstructorModel(fieldModels, withNonnull),
+                getters = fieldModels.map { buildGetterModel(it, withNonnull) },
+                methods = buildEqualsHashCodeToStringMethod(className, fieldModels, withNonnull) + buildBuilderFactoryMethods(className = className, builderClassModel = builderClassModel, withNonnull = withNonnull),
                 nestedClasses = listOf(builderClassModel)
         )
     }
@@ -47,33 +47,33 @@ object ClassGenerator {
         )
     }
 
-    private fun buildConstructorModel(fieldModels: List<FieldModel>): ConstructorModel {
+    private fun buildConstructorModel(fieldModels: List<FieldModel>, withNonnull: Boolean): ConstructorModel {
         return ConstructorModel(
-                parameters = fieldModels.map { buildConstructorParameterModel(it)},
+                parameters = fieldModels.map { buildConstructorParameterModel(it, withNonnull)},
                 modifiers = listOf(Modifier.PRIVATE)
         )
     }
 
-    private fun buildConstructorParameterModel(fieldModel: FieldModel): ParameterModel {
+    private fun buildConstructorParameterModel(fieldModel: FieldModel, withNonnull: Boolean): ParameterModel {
         return ParameterModel(
                 name = fieldModel.name,
                 type = fieldModel.type,
-                annotations = getAnnotationsFromFieldRequirement(fieldModel.required),
+                annotations = getAnnotationsFromFieldRequirement(fieldModel.required, withNonnull),
                 required = fieldModel.required
         )
     }
 
-    private fun buildGetterModel(fieldModel: FieldModel): GetterModel {
+    private fun buildGetterModel(fieldModel: FieldModel, withNonnull: Boolean): GetterModel {
         return GetterModel(
                 fieldName = fieldModel.name,
                 fieldType = fieldModel.type,
                 modifiers = listOf(Modifier.PUBLIC),
-                annotations = listOf(AnnotationModel.NONNULL),
+                annotations = if (withNonnull) listOf(AnnotationModel.NONNULL) else emptyList(),
                 asOptional = !fieldModel.required
         )
     }
 
-    private fun buildEqualsHashCodeToStringMethod(className: String, fields: List<FieldModel>): List<WritableMethod> {
+    private fun buildEqualsHashCodeToStringMethod(className: String, fields: List<FieldModel>, withNonnull: Boolean): List<WritableMethod> {
         return listOf(
                 EqualsMethod(
                         method = MethodModel(
@@ -108,7 +108,7 @@ object ClassGenerator {
                         method = MethodModel(
                                 name = "toString",
                                 modifiers = listOf(Modifier.PUBLIC),
-                                annotations = listOf(AnnotationModel.NONNULL, AnnotationModel.OVERRIDE),
+                                annotations = if (withNonnull) listOf(AnnotationModel.NONNULL, AnnotationModel.OVERRIDE) else listOf(AnnotationModel.OVERRIDE),
                                 parameters = emptyList(),
                                 returnType = "String"
                         ),
@@ -119,13 +119,13 @@ object ClassGenerator {
     }
 
 
-    private fun buildBuilderFactoryMethods(className: String, builderClassModel: ClassModel): List<WritableMethod> {
+    private fun buildBuilderFactoryMethods(className: String, builderClassModel: ClassModel, withNonnull: Boolean): List<WritableMethod> {
         return listOf(
                 BuilderFactoryMethod(
                         MethodModel(
                                 name = "builder",
                                 modifiers = listOf(Modifier.PUBLIC, Modifier.STATIC),
-                                annotations = listOf(AnnotationModel.NONNULL),
+                                annotations = if (withNonnull) listOf(AnnotationModel.NONNULL) else emptyList(),
                                 parameters = emptyList(),
                                 returnType = builderClassModel.name
                         )
@@ -134,11 +134,11 @@ object ClassGenerator {
                         MethodModel(
                                 name = "builder",
                                 modifiers = listOf(Modifier.PUBLIC, Modifier.STATIC),
-                                annotations = listOf(AnnotationModel.NONNULL),
+                                annotations = if (withNonnull) listOf(AnnotationModel.NONNULL) else emptyList(),
                                 parameters = listOf(ParameterModel(
                                         name = "copy",
                                         type = className,
-                                        annotations = listOf(AnnotationModel.NONNULL),
+                                        annotations = if (withNonnull) listOf(AnnotationModel.NONNULL) else emptyList(),
                                         required = true
                                 )),
                                 returnType = builderClassModel.name
@@ -149,7 +149,8 @@ object ClassGenerator {
     }
 
     private fun buildBuilderClassModel(ownerClassName: String,
-                                       fieldModels: List<FieldModel>): ClassModel {
+                                       fieldModels: List<FieldModel>,
+                                       withNonnull: Boolean): ClassModel {
         val builderClassName = "Builder"
         val builderFields = fieldModels.map { it.withoutModifier(Modifier.FINAL) }
         return ClassModel(
@@ -158,22 +159,23 @@ object ClassGenerator {
                 fields = builderFields,
                 constructor = ConstructorModel(emptyList(), listOf(Modifier.PRIVATE)),
                 getters = emptyList(),
-                methods = buildBuilderMethodModels(ownerClassName, builderClassName, builderFields),
+                methods = buildBuilderMethodModels(ownerClassName, builderClassName, builderFields, withNonnull),
                 nestedClasses = emptyList()
         )
     }
 
     private fun buildBuilderMethodModels(ownerClassName: String,
                                          builderClassName: String,
-                                         builderFields: List<FieldModel>): List<WritableMethod> {
+                                         builderFields: List<FieldModel>,
+                                         withNonnull: Boolean): List<WritableMethod> {
         val methods = mutableListOf<WritableMethod>()
-        methods.addAll(builderFields.map { WithMethod(buildBuilderMethodModel(builderClassName, it)) })
+        methods.addAll(builderFields.map { WithMethod(buildBuilderMethodModel(builderClassName, it, withNonnull)) })
         methods.add(
                 BuilderBuildMethod(
                         MethodModel(
                                 name = "build",
                                 modifiers = listOf(Modifier.PUBLIC),
-                                annotations = listOf(AnnotationModel.NONNULL),
+                                annotations = if (withNonnull) listOf(AnnotationModel.NONNULL) else emptyList(),
                                 parameters = emptyList(),
                                 returnType = ownerClassName
                         ),
@@ -183,16 +185,16 @@ object ClassGenerator {
         return methods
     }
 
-    private fun buildBuilderMethodModel(builderClassName: String, fieldModel: FieldModel): MethodModel {
+    private fun buildBuilderMethodModel(builderClassName: String, fieldModel: FieldModel, withNonnull: Boolean): MethodModel {
         return MethodModel(
                 name = "with" + StringUtils.fromUpperCase(fieldModel.name),
                 modifiers = listOf(Modifier.PUBLIC),
-                annotations = listOf(AnnotationModel.NONNULL),
+                annotations = if (withNonnull) listOf(AnnotationModel.NONNULL) else emptyList(),
                 parameters = listOf(
                         ParameterModel(
                                 name = fieldModel.name,
                                 type = fieldModel.type,
-                                annotations = getAnnotationsFromFieldRequirement(fieldModel.required),
+                                annotations = getAnnotationsFromFieldRequirement(fieldModel.required, withNonnull),
                                 required =  fieldModel.required
                         )
                 ),
@@ -200,8 +202,12 @@ object ClassGenerator {
         )
     }
 
-    private fun getAnnotationsFromFieldRequirement(fieldRequired: Boolean): List<AnnotationModel> {
-        return if (fieldRequired) listOf(AnnotationModel.NONNULL) else listOf(AnnotationModel.NULLABLE)
+    private fun getAnnotationsFromFieldRequirement(fieldRequired: Boolean, withNonnull: Boolean): List<AnnotationModel> {
+        return if (withNonnull) {
+            if (fieldRequired) listOf(AnnotationModel.NONNULL) else listOf(AnnotationModel.NULLABLE)
+        } else {
+            emptyList()
+        }
     }
 
 }

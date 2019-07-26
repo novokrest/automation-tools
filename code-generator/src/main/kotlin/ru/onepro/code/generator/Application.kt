@@ -9,7 +9,10 @@ fun main(args: Array<String>) {
     if (!Files.exists(inputClassesFilePath)) {
         println("File with classes descriptions was not found: path=$inputClassesFilePath")
     }
-    val generatedFiles = ClassesGenerator.run(inputClassesFilePath, Paths.get("output"))
+    val withoutNonnullPropValue = System.getProperty("withoutNonnull")
+    val withNonnull: Boolean = withoutNonnullPropValue == null
+    println("'$withoutNonnullPropValue': $withNonnull")
+    val generatedFiles = ClassesGenerator.run(inputClassesFilePath, Paths.get("output"), withNonnull)
     println("Generated files:")
     generatedFiles.forEach { println("\t$it") }
 }

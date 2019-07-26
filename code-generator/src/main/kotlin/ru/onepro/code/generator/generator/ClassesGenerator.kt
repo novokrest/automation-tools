@@ -6,9 +6,9 @@ import java.nio.file.Path
 
 object ClassesGenerator {
 
-    fun run(inputClassesFilePath: Path, outputDirPath: Path): List<Path> {
+    fun run(inputClassesFilePath: Path, outputDirPath: Path, withNonnull: Boolean): List<Path> {
         val classDescriptions: List<ClassDescription> = ClassesParser.parse(inputClassesFilePath).classes
-        return classDescriptions.map { ClassGenerator.generate(outputDirPath, it) }
+        return classDescriptions.map { ClassGenerator.generate(outputDirPath, it, withNonnull) }
     }
 
 }
