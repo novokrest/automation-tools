@@ -5,6 +5,7 @@ import ru.onepro.code.generator.writer.CodeWriter
 import kotlin.reflect.KClass
 
 data class ClassModel(
+        val mode: Mode,
         val name: String,
         val modifiers: List<Modifier>,
         val fields: List<FieldModel>,
@@ -13,6 +14,14 @@ data class ClassModel(
         val methods: List<WritableMethod>,
         val nestedClasses: List<ClassModel>
 )
+
+enum class Mode {
+
+    REVOLUT,
+
+    YM,
+
+}
 
 data class FieldModel(
         val name: String,

@@ -1,3 +1,4 @@
+type: REVOLUT
 withNonnull: false
 builderMethodPrefix: ''
 isFieldPublic: true

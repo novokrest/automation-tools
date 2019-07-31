@@ -103,9 +103,11 @@ object ClassWriter {
 
     private fun writeMethod(writer: CodeWriter, writableMethod: WritableMethod) {
         val method = writableMethod.method
-        writer.write(
-                ClassUtils.concatAnnotations(method.annotations, System.lineSeparator())
-        )
+        if (method.annotations.isNotEmpty()) {
+            writer.write(
+                    ClassUtils.concatAnnotations(method.annotations, System.lineSeparator())
+            )
+        }
         writer.write(
                 ClassUtils.concatTokens(
                         ClassUtils.concatModifiers(method.modifiers),
@@ -146,7 +148,7 @@ object ClassWriter {
 
             constructor.parameters.forEach {
                 writer.writeWithSemicolon(
-                        ClassUtils.concatTokens("this.${it.name}", "=", wrapNameWithRequireNonnull(it))
+                        ClassUtils.concatTokens("this.${it.name}", "=", wrapNameWithRequireNonnull(classModel.mode, it))
                 )
             }
 
@@ -155,8 +157,11 @@ object ClassWriter {
 
     }
 
-    private fun wrapNameWithRequireNonnull(parameter: ParameterModel): String = if (parameter.required) {
-        "requireNonNull(${parameter.name}, \"${parameter.name}\")"
+    private fun wrapNameWithRequireNonnull(mode: Mode, parameter: ParameterModel): String = if (parameter.required) {
+        when (mode) {
+            Mode.REVOLUT -> "checkRequired(\"${parameter.name}\", ${parameter.name})"
+            Mode.YM -> "requireNonNull(${parameter.name}, \"${parameter.name}\")"
+        }
     } else {
         parameter.name
     }

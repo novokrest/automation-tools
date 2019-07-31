@@ -1,43 +1,155 @@
 classes:
+  - name: ProvideValueFunctionDefinition
+    fields:
+      functionName: String
+      functionBody: String
+  - name: ProvideValueFromRequestFunctionDefinition
+    fields:
+      functionName: String
+      apiOperationName: String
+      apiRequestModel: CodegenModel
+      apiResponseFieldName: String
+  - name: CardEventAttributeRecord
+    fields:
+      eventId: Long
+      attributeName: String
+      attributeValue: String
+  - name: CompletedCardTransactionEventRecord
+    fields:
+      eventId: Long
+      eventType: CardProcessingEventType
+      eventAuthCode: String
+      eventDate: Instant
+      eventCreatedDate: Instant
+      eventUpdatedDate: Instant
+      authEventDate: Instant
+      billAmount: Money
+      cardToken: String
+      transaction: TransactionLegRecord
+  - name: TransactionLegRecord
+    fields:
+      transactionId: TransactionId
+      transactionGroupKey: TransactionGroupKey
+      transactionType: TransactionType
+      startedDate: Instant
+      completedDate: Instant
+      createdDate: Instant
+      updatedDate: Instant
+      amount: Money
+      fromWallet: WalletRecord
+      toWallet: WalletRecord 
+  - name: WalletRecord
+    fields:
+      walletId: WalletId
+      walletOwnerId: WalletOwnerId
+      pocketId: PocketId
+      pocketAccountNumber: String
+  - name: RecordGroupIterator 
+    fields:
+      storage: DailyReportStorage
+      reader: DailyReportReader
+      dates: Collection<LocalDate>
+      groupKey: Function<RecordT, RecordGroupKeyT>
+  - name: ProvideApiKeyDefinition 
+    fields:
+      name: String
+      registerPhoneOperationId: String
+      registerPhoneModel: CodegenModel
+      verifyPhoneOperationId: String
+      verifyPhoneModel: CodegenModel
+      verifyPhoneResponseApiKeyPropertyName: String
+  - name: WorkoutSessionStart
+    fields:
+      workoutType: WorkoutType
+      startDateTime: ZonedDateTime
+      stopDateTime: ZonedDateTime
+  - name: Params
+    fields:
+      registryType: QiwiRegistryType
+      registryDate: LocalDate
+      registryBuiltDate: Instant
+      registryFilePath: Path
+  - name: QiwiObiOperation
+    fields:
+      id: Long
+      operationId: String
+      transactionId: String
+      authCode: String
+      createdAt: Instant
+      updatedAt: Instant
+  - name: WalletOwner
+    fields:
+      walletId: WalletId
+      ownerId: WalletOwnerId
+  - name: GetEventsRequest
+    fields:
+      transactionIds: List<TransactionId>
+      fromDate: ZonedDateTime
+      toDate: ZonedDateTime
+  - name: QiwiResponse
+    fields:
+      currentBalance: Money
+      availableBalance: Money
+      reasonCode: Optional<QiwiResponseCode> 
+      type: Type
+  - name: BalanceInfo
+    fields:
+      date: String
+      amount: String
+      creditHold: String
+      debitHold: String
+      currency: String
+      clientId: String
+      accountNumber: String
+  - name: Payer
+    fields:
+      debitCardToken: String
+      debitWalletId: String
+      debitAccountNumber: String
+  - name: TransactionInfo
+    fields:
+      uniqueNumber: String
+      operationIdentifier: String
+      transactionIdentifier: String
+      transactionIdentifierOnline: Optional<String>
+      authCode: String
+      stan: String
+      status: Status
+      type: Type
+      dateTime: ZonedDateTime
+      qiwiOrPaymentSystemDateTime: ZonedDateTime
+      authorizationAmount: Money
+      debitAmount: Optional<Money>
+      creditAmount: Optional<Money>
+      settlementDebitAmount: Optional<Money>
+      settlementCreditAmount: Optional<Money>
+      transactionCommissionAmount: Optional<Money>
+      commissionAmount: Optional<Money>
+      qiwiCommissionAmount: Optional<Money>
+      rrn: String
+      qiwiBankIdentifier: Optional<String>
+      debitCardToken: Optional<String>
+      debitWalletId: Optional<String>
+      debitAccountNumber: Optional<String>
+      creditCardToken: Optional<String>
+      creditWalletId: Optional<String>
+      creditAccountNumber: Optional<String>
+      fromCountry: String
+      toCountry: String
+      productCategory: String
+      mcc: String
+      comment: Optional<String>
   - name: CardProcessingEvent
     fields:
       id: String
       authCode: String
       type: String
       cardToken: String
+      transactionId: String
       billAmount: Money
       eventDateTime: ZonedDateTime
       createdDateTime: ZonedDateTime
       originalRequest: String
-  - name: TransactionInfo
-    fields:
-      uniqueNumber: String
-      operationIdentifier: String
-      transactionIdentifierOnline: String
-      authCode: String
-      stan: String
-      status: String
-      type: String
-      dateTime: String
-      qiwiOrPaymentSystemDateTime: String
-      authorizationAmount: Money
-      debitAmount: Money
-      creditAmount: Money
-      settlementAmount: Money
-      commissionAmount: Money
-      qiwiCommissionAmount: Money
-      rrn: String
-      qiwiBankIdentifier: String
-      debitCardToken: String
-      debitWalletId: String
-      debitAccountNumber: String
-      creditCardToken: String
-      creditWalletId: String
-      creditAccountNumber: String
-      fromCountry: String
-      toCountry: String
-      productCategory: String
-      comment: String
   - name: QiwiOperation
     fields:
       operation: Operation
