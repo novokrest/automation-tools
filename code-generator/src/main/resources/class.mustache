@@ -27,11 +27,9 @@ public class {{className}} {
     {{> get_property}}
     {{/fields}}
     {{> to_string}}
-
     {{#isBuilderFactoryInsideModelClass}}
     {{> builder_factory_method}}
     {{/isBuilderFactoryInsideModelClass}}
-
     public static class Builder {
 
         {{#fields}}

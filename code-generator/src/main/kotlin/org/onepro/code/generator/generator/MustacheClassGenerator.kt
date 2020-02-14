@@ -31,6 +31,8 @@ class MustacheClassGenerator {
             "withPackage" to config.withPackage,
             "isNonNullAnnotationUsed" to config.withNonnull,
             "isRequireNonNullUsed" to (config.checkConstructorParamsMode == RequireNonNull),
+            "doesUseClassNameAsFactoryMethod" to config.doesUseClassNameAsFactoryMethod,
+            "isBuilderFactoryInsideModelClass" to config.isBuilderFactoryInsideModelClass,
             "fields" to clazz.fields.entries.map { it.key to it.value }.withIndex().map {
                 val index = it.index
                 val (name, type) = it.value
@@ -39,9 +41,7 @@ class MustacheClassGenerator {
                     "name" to name,
                     "isLast" to (index == clazz.fields.size - 1),
                     "nameInPascalCase" to name.capitalize(),
-                    "isGetPropertyWithPrefix" to !config.isGetPropertyWithoutPrefix,
-                    "doesUseClassNameAsFactoryMethod" to config.doesUseClassNameAsFactoryMethod,
-                    "isBuilderFactoryInsideModelClass" to config.isBuilderFactoryInsideModelClass
+                    "isGetPropertyWithPrefix" to !config.isGetPropertyWithoutPrefix
                 )
             }
         )
