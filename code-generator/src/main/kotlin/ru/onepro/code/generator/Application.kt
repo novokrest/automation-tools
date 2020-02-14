@@ -13,7 +13,7 @@ fun main(args: Array<String>) {
         println("File with classes descriptions was not found: path=$inputClassesFilePath")
     }
     val configPropValue = System.getProperty("config")
-    val config = if (configPropValue == null) Config() else Parser.parseConfig(Path.of("config", "$configPropValue.yml"))
+    val config = if (configPropValue == null) Config() else Parser.parseConfig(Path.of("config", "${configPropValue.toLowerCase()}.yml"))
     val generatedFiles = ClassesGenerator.run(inputClassesFilePath, Paths.get("output"), config)
     println("Generated files:")
     generatedFiles.forEach { println("\t$it") }

@@ -1,6 +1,8 @@
 package ru.onepro.code.generator.writer
 
 import ru.onepro.code.generator.model.*
+import ru.onepro.code.generator.model.CheckConstructorParamsMode.CheckRequired
+import ru.onepro.code.generator.model.CheckConstructorParamsMode.RequireNonNull
 import ru.onepro.code.generator.utils.StringUtils
 import java.io.BufferedOutputStream
 import java.io.OutputStream
@@ -148,7 +150,7 @@ object ClassWriter {
 
             constructor.parameters.forEach {
                 writer.writeWithSemicolon(
-                        ClassUtils.concatTokens("this.${it.name}", "=", wrapNameWithRequireNonnull(classModel.mode, it))
+                        ClassUtils.concatTokens("this.${it.name}", "=", wrapNameWithRequireNonnull(classModel.checkConstructorParamsMode, it))
                 )
             }
 
@@ -157,10 +159,10 @@ object ClassWriter {
 
     }
 
-    private fun wrapNameWithRequireNonnull(mode: Mode, parameter: ParameterModel): String = if (parameter.required) {
+    private fun wrapNameWithRequireNonnull(mode: CheckConstructorParamsMode, parameter: ParameterModel): String = if (parameter.required) {
         when (mode) {
-            Mode.REVOLUT -> "checkRequired(\"${parameter.name}\", ${parameter.name})"
-            Mode.YM -> "requireNonNull(${parameter.name}, \"${parameter.name}\")"
+            CheckRequired -> "checkRequired(\"${parameter.name}\", ${parameter.name})"
+            RequireNonNull -> "requireNonNull(${parameter.name}, \"${parameter.name}\")"
         }
     } else {
         parameter.name

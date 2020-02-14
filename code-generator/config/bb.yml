@@ -1,0 +1,4 @@
+checkConstructorParamsMode: RequireNonNull
+withNonnull: true
+builderMethodPrefix: ''
+isFieldPublic: false

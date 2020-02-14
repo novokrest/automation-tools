@@ -1,7 +1,6 @@
 package ru.onepro.code.generator.generator
 
 import ru.onepro.code.generator.config.Config
-import ru.onepro.code.generator.config.ConfigType
 import ru.onepro.code.generator.dsl.ClassDescription
 import ru.onepro.code.generator.model.*
 import ru.onepro.code.generator.utils.StringUtils
@@ -30,7 +29,7 @@ object ClassGenerator {
         }
         val builderClassModel = buildBuilderClassModel(className, fieldModels, config)
         return ClassModel(
-                mode = getMode(config),
+                checkConstructorParamsMode = config.checkConstructorParamsMode,
                 name = className,
                 modifiers = listOf(Modifier.PUBLIC),
                 fields = fieldModels,
@@ -157,7 +156,7 @@ object ClassGenerator {
         val builderClassName = "Builder"
         val builderFields = fieldModels.map { it.withoutModifier(Modifier.FINAL).withModifierSubstitution(Modifier.PUBLIC, Modifier.PRIVATE) }
         return ClassModel(
-                mode = getMode(config),
+                checkConstructorParamsMode = config.checkConstructorParamsMode,
                 name = builderClassName,
                 modifiers = listOf(Modifier.PUBLIC, Modifier.STATIC),
                 fields = builderFields,
@@ -166,13 +165,6 @@ object ClassGenerator {
                 methods = buildBuilderMethodModels(ownerClassName, builderClassName, builderFields, config.withNonnull, config.builderMethodPrefix),
                 nestedClasses = emptyList()
         )
-    }
-
-    private fun getMode(config: Config): Mode {
-        return when (config.type) {
-            ConfigType.YM -> Mode.YM
-            ConfigType.REVOLUT -> Mode.REVOLUT
-        }
     }
 
     private fun buildBuilderMethodModels(ownerClassName: String,

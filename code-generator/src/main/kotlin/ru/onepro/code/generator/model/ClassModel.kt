@@ -5,7 +5,7 @@ import ru.onepro.code.generator.writer.CodeWriter
 import kotlin.reflect.KClass
 
 data class ClassModel(
-        val mode: Mode,
+        val checkConstructorParamsMode: CheckConstructorParamsMode,
         val name: String,
         val modifiers: List<Modifier>,
         val fields: List<FieldModel>,
@@ -15,20 +15,20 @@ data class ClassModel(
         val nestedClasses: List<ClassModel>
 )
 
-enum class Mode {
-
-    REVOLUT,
-
-    YM,
-
-}
-
 data class FieldModel(
         val name: String,
         val type: String,
         val modifiers: List<Modifier>,
         val required: Boolean
 )
+
+enum class CheckConstructorParamsMode {
+
+    CheckRequired,
+
+    RequireNonNull,
+
+}
 
 fun FieldModel.withoutModifier(vararg modifiersToRemove: Modifier): FieldModel =
         FieldModel(

@@ -1,2 +1,4 @@
-./gradlew run -Dconfig=revolu
+```bash
+./gradlew run -Dconfig=revolut
 ./gradle run
+```

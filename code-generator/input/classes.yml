@@ -1,4 +1,13 @@
 classes:
+  - name: RegisterResult
+    fields:
+      state: UserState
+      sessionId: RegisterSessionId
+  - name: User
+    fields:
+      id: Long
+      uid: Uid
+      email: Email
   - name: ProvideValueFunctionDefinition
     fields:
       functionName: String

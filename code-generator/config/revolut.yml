@@ -1,4 +1,4 @@
-type: REVOLUT
+checkConstructorParamsMode: CheckRequired
 withNonnull: false
 builderMethodPrefix: ''
 isFieldPublic: true
