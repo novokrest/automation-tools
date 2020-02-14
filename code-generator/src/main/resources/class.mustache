@@ -48,7 +48,7 @@ public class {{className}} {
         {{> builder_set_method}}
         {{/fields}}
         {{#isNonNullAnnotationUsed}}@Nonnull{{/isNonNullAnnotationUsed}}
-        public {{classNameInCamelCase}} build() {
+        public {{className}} build() {
             return new {{className}}(
                 {{#fields}}
                 {{name}}{{^isLast}},{{/isLast}}
