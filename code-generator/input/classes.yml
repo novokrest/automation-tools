@@ -1,4 +1,10 @@
 classes:
+  - name: MailMessage
+    fields:
+      sender: EmailAddress
+      recipient: EmailAddress
+      subject: String
+      htmlContent: String
   - name: RegisterResult
     fields:
       state: UserState

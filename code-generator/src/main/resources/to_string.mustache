@@ -1,0 +1,11 @@
+{{#isNonNullAnnotationUsed}}
+@Nonnull
+{{/isNonNullAnnotationUsed}}
+@Override
+public String toString() {
+    return "{{className}}{" +
+    {{#fields}}
+        "{{name}}={{#isString}}'{{/isString}}" + {{name}} + {{#isString}}'\'' +{{/isString}}
+    {{/fields}}
+        '}';
+}

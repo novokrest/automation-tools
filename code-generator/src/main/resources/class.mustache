@@ -1,0 +1,61 @@
+{{#witPackage}}
+package generated;
+{{/witPackage}}
+{{#isNonNullAnnotationUsed}}import javax.annotation.Nonnull;{{/isNonNullAnnotationUsed}}
+import java.util.Objects;
+{{#isRequireNonNullUsed}}
+import static java.util.Objects.requireNonNull;
+{{/isRequireNonNullUsed}}
+
+public class {{className}} {
+
+    {{#fields}}
+    {{> field}}
+    {{/fields}}
+
+    private {{className}}(
+        {{#fields}}
+        {{> parameter}}
+        {{/fields}}
+    ) {
+        {{#fields}}
+        {{> field_init}}
+        {{/fields}}
+    }
+
+    {{#fields}}
+    {{> get_property}}
+    {{/fields}}
+    {{> to_string}}
+
+    {{#isBuilderFactoryInsideModelClass}}
+    {{> builder_factory_method}}
+    {{/isBuilderFactoryInsideModelClass}}
+
+    public static class Builder {
+
+        {{#fields}}
+        {{> builder_field}}
+        {{/fields}}
+
+        private Builder() {
+        }
+
+        {{^isBuilderFactoryInsideModelClass}}
+        {{> builder_factory_method}}
+        {{/isBuilderFactoryInsideModelClass}}
+        {{#fields}}
+        {{> builder_set_method}}
+        {{/fields}}
+        {{#isNonNullAnnotationUsed}}@Nonnull{{/isNonNullAnnotationUsed}}
+        public {{classNameInCamelCase}} build() {
+            return new {{className}}(
+                {{#fields}}
+                {{name}}{{^isLast}},{{/isLast}}
+                {{/fields}}
+            );
+        }
+
+    }
+
+}

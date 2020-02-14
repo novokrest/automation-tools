@@ -1,0 +1,6 @@
+{{#isNonNullAnnotationUsed}}
+@Nonnull
+{{/isNonNullAnnotationUsed}}
+public {{type}} {{#isGetPropertyWithPrefix}}get{{nameInPascalCase}}{{/isGetPropertyWithPrefix}}{{^isGetPropertyWithPrefix}}{{name}}{{/isGetPropertyWithPrefix}}() {
+    return {{name}};
+}

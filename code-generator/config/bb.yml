@@ -1,4 +1,9 @@
+useMustache: true
+withPackage: false
 checkConstructorParamsMode: RequireNonNull
 withNonnull: true
 builderMethodPrefix: ''
 isFieldPublic: false
+isGetPropertyWithoutPrefix: true
+doesUseClassNameAsFactoryMethod: true
+isBuilderFactoryInsideModelClass: false
