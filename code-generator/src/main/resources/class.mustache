@@ -15,7 +15,7 @@ public class {{className}} {
 
     private {{className}}(
         {{#fields}}
-        {{> parameter}}
+        {{> parameter}}{{^isLast}},{{/isLast}}
         {{/fields}}
     ) {
         {{#fields}}
