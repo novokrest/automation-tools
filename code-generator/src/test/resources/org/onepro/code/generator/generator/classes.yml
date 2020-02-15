@@ -12,3 +12,4 @@ classes:
       - title:String
     required:
       - id
+    equal: true

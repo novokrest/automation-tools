@@ -11,7 +11,7 @@ import java.nio.file.Path
 
 class MustacheClassGenerator {
 
-    var mustacheFactory: MustacheFactory = DefaultMustacheFactory()
+    private val mustacheFactory: MustacheFactory = DefaultMustacheFactory()
 
     fun generate(outputDir: Path, clazz: ClassDescription, config: Config): Path {
         val mustache = mustacheFactory.compile("class.mustache")
@@ -34,6 +34,7 @@ class MustacheClassGenerator {
             "doesUseClassNameAsFactoryMethod" to config.doesUseClassNameAsFactoryMethod,
             "isBuilderFactoryInsideModelClass" to config.isBuilderFactoryInsideModelClass,
             "withJson" to (clazz.json ?: false),
+            "withEquals" to (clazz.equal ?: false),
             "fields" to clazz.fieldDescriptions.withIndex().map {
                 val index = it.index
                 val field = it.value

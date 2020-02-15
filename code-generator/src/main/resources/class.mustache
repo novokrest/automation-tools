@@ -11,6 +11,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 {{/isNonNullAnnotationUsed}}
+{{#withEquals}}
+import java.util.Objects;
+{{/withEquals}}
 {{#isRequireNonNullUsed}}
 
 import static java.util.Objects.requireNonNull;
@@ -37,6 +40,9 @@ public class {{className}} {
     {{#fields}}
 {{> get_property}}
     {{/fields}}
+    {{#withEquals}}
+{{> equals}}
+    {{/withEquals}}
 {{> to_string}}
     {{#isBuilderFactoryInsideModelClass}}
     {{> builder_factory_method}}

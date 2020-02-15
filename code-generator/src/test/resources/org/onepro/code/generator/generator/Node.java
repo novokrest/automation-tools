@@ -1,5 +1,6 @@
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 import static java.util.Objects.requireNonNull;
 
@@ -28,6 +29,24 @@ public class Node {
     @Nullable
     public String getTitle() {
         return title;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null || obj.getClass() != getClass()) {
+            return false;
+        }
+        Node other = (Node) obj;
+        return Objects.equals(id, other.id)
+            && Objects.equals(title, other.title);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title);
     }
 
     @Nonnull

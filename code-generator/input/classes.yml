@@ -8,3 +8,4 @@ classes:
     - first
     - last
   json: true
+  equal: true

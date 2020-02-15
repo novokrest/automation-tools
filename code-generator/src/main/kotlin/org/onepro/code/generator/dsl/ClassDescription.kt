@@ -8,7 +8,8 @@ data class ClassDescription(
     val name: String,
     val fields: List<String>,
     val required: List<String>?,
-    val json: Boolean?
+    val json: Boolean?,
+    val equal: Boolean?
 ) {
     val fieldDescriptions = fields.map { parseFieldDescription(it) }
 
