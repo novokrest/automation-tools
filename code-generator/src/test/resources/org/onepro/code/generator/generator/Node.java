@@ -35,7 +35,7 @@ public class Node {
     public String toString() {
         return "Node{" +
             "id=" + id +
-            "title=" + title +
+            ", title=" + title +
             '}';
     }
 

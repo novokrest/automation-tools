@@ -44,6 +44,7 @@ class MustacheClassGenerator {
                     "hasComment" to (field.comment != null),
                     "comment" to (field.comment ?: ""),
                     "isLast" to (index == clazz.fields.size - 1),
+                    "isFirst" to (index == 0),
                     "nameInPascalCase" to field.name.capitalize(),
                     "isGetPropertyWithPrefix" to !config.isGetPropertyWithoutPrefix
                 )

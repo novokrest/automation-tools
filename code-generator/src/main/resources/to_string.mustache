@@ -5,7 +5,7 @@
     public String toString() {
         return "{{className}}{" +
         {{#fields}}
-            "{{name}}={{#isString}}'{{/isString}}" + {{name}} +{{#isString}} '\'' +{{/isString}}
+            "{{^isFirst}}, {{/isFirst}}{{name}}={{#isString}}'{{/isString}}" + {{name}} +{{#isString}} '\'' +{{/isString}}
         {{/fields}}
             '}';
     }

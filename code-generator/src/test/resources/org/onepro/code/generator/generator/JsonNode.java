@@ -41,7 +41,7 @@ public class JsonNode {
     public String toString() {
         return "JsonNode{" +
             "id=" + id +
-            "title=" + title +
+            ", title=" + title +
             '}';
     }
 
