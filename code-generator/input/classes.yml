@@ -1,1 +1,10 @@
-classes: []
+classes:
+- name: FullName
+  fields:
+    - first:String:Name
+    - last:String:Surname
+    - middle:String:Patronymic
+  required:
+    - first
+    - last
+  json: true

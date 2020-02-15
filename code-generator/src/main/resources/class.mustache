@@ -1,21 +1,32 @@
 {{#witPackage}}
 package generated;
+
 {{/witPackage}}
-{{#isNonNullAnnotationUsed}}import javax.annotation.Nonnull;{{/isNonNullAnnotationUsed}}
-import java.util.Objects;
+{{#withJson}}
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+{{/withJson}}
+{{#isNonNullAnnotationUsed}}
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+{{/isNonNullAnnotationUsed}}
 {{#isRequireNonNullUsed}}
+
 import static java.util.Objects.requireNonNull;
 {{/isRequireNonNullUsed}}
 
 public class {{className}} {
 
     {{#fields}}
-    {{> field}}
+{{> field}}
     {{/fields}}
-
+    {{#withJson}}
+    @JsonCreator
+    {{/withJson}}
     private {{className}}(
         {{#fields}}
-        {{> parameter}}{{^isLast}},{{/isLast}}
+        {{#withJson}}@JsonProperty("{{name}}") {{/withJson}}{{> parameter}}{{^isLast}},{{/isLast}}
         {{/fields}}
     ) {
         {{#fields}}
@@ -24,9 +35,9 @@ public class {{className}} {
     }
 
     {{#fields}}
-    {{> get_property}}
+{{> get_property}}
     {{/fields}}
-    {{> to_string}}
+{{> to_string}}
     {{#isBuilderFactoryInsideModelClass}}
     {{> builder_factory_method}}
     {{/isBuilderFactoryInsideModelClass}}
@@ -40,16 +51,20 @@ public class {{className}} {
         }
 
         {{^isBuilderFactoryInsideModelClass}}
-        {{> builder_factory_method}}
+{{> builder_factory_method}}
         {{/isBuilderFactoryInsideModelClass}}
         {{#fields}}
-        {{> builder_set_method}}
+{{> builder_set_method}}
         {{/fields}}
         {{#isNonNullAnnotationUsed}}@Nonnull{{/isNonNullAnnotationUsed}}
         public {{className}} build() {
             return new {{className}}(
                 {{#fields}}
+                {{#withJson}}
+                {{> check_parameter}}{{^isLast}},{{/isLast}}
+                {{/withJson}}{{^withJson}}
                 {{name}}{{^isLast}},{{/isLast}}
+                {{/withJson}}
                 {{/fields}}
             );
         }

@@ -1,9 +1,13 @@
 classes:
-- name: Stub
+- name: Node
   fields:
-    id: Long
-    title: String
-    parent: Stub
+    - id:Long:Identifier
+    - title:String
   required:
     - id
     - title
+  json: true
+- name: Node2
+  fields:
+    - id:Long:Identifier
+    - title:String

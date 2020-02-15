@@ -1,6 +1,6 @@
-{{#isNonNullAnnotationUsed}}
-@Nonnull
-{{/isNonNullAnnotationUsed}}
-public static Builder {{#doesUseClassNameAsFactoryMethod}}{{classNameInCamelCase}}{{/doesUseClassNameAsFactoryMethod}}{{^doesUseClassNameAsFactoryMethod}}builder{{/doesUseClassNameAsFactoryMethod}}() {
-    return new Builder();
-}
+        {{#isNonNullAnnotationUsed}}
+        @Nonnull
+        {{/isNonNullAnnotationUsed}}
+        public static Builder {{#doesUseClassNameAsFactoryMethod}}{{classNameInCamelCase}}{{/doesUseClassNameAsFactoryMethod}}{{^doesUseClassNameAsFactoryMethod}}builder{{/doesUseClassNameAsFactoryMethod}}() {
+            return new Builder();
+        }

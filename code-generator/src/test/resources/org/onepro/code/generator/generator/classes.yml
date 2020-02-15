@@ -1,9 +1,14 @@
 classes:
-- name: Node
-  fields:
-    id: Long
-    title: String
-    parent: Node
-  required:
-    - id
-    - title
+  - name: JsonNode
+    fields:
+      - id:Long:Identifier
+      - title:String
+    required:
+      - id
+    json: true
+  - name: Node
+    fields:
+      - id:Long:Identifier
+      - title:String
+    required:
+      - id

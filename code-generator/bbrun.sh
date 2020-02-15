@@ -1,0 +1,1 @@
+./gradlew -Dconfig=BB run

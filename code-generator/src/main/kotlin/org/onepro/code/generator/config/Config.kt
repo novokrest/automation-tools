@@ -4,7 +4,6 @@ import org.onepro.code.generator.model.CheckConstructorParamsMode
 import org.onepro.code.generator.model.CheckConstructorParamsMode.RequireNonNull
 
 data class Config(
-        val useMustache: Boolean = false,
         val withPackage: Boolean = true,
         val checkConstructorParamsMode: CheckConstructorParamsMode = RequireNonNull,
         val withNonnull: Boolean = true,

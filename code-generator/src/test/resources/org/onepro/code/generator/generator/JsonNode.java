@@ -1,9 +1,12 @@
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
-public class Node {
+public class JsonNode {
 
     /**
      * Identifier
@@ -12,19 +15,22 @@ public class Node {
 
     private final String title;
 
-    private Node(
-        @Nonnull Long id,
-        @Nullable String title
+    @JsonCreator
+    private JsonNode(
+        @JsonProperty("id") @Nonnull Long id,
+        @JsonProperty("title") @Nullable String title
     ) {
-        this.id = requireNonNull(id, "id");
+        this.id = id;
         this.title = title;
     }
 
+    @JsonProperty("id")
     @Nonnull
     public Long getId() {
         return id;
     }
 
+    @JsonProperty("title")
     @Nullable
     public String getTitle() {
         return title;
@@ -33,7 +39,7 @@ public class Node {
     @Nonnull
     @Override
     public String toString() {
-        return "Node{" +
+        return "JsonNode{" +
             "id=" + id +
             "title=" + title +
             '}';
@@ -48,7 +54,7 @@ public class Node {
         }
 
         @Nonnull
-        public static Builder node() {
+        public static Builder jsonNode() {
             return new Builder();
         }
 
@@ -65,9 +71,9 @@ public class Node {
         }
 
         @Nonnull
-        public Node build() {
-            return new Node(
-                id,
+        public JsonNode build() {
+            return new JsonNode(
+                requireNonNull(id, "id"),
                 title
             );
         }

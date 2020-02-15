@@ -1,4 +1,3 @@
-useMustache: true
 withPackage: false
 checkConstructorParamsMode: RequireNonNull
 withNonnull: true

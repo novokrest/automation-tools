@@ -4,6 +4,7 @@ import com.github.mustachejava.DefaultMustacheFactory
 import com.github.mustachejava.MustacheFactory
 import org.onepro.code.generator.config.Config
 import org.onepro.code.generator.dsl.ClassDescription
+import org.onepro.code.generator.dsl.FieldDescription
 import org.onepro.code.generator.model.CheckConstructorParamsMode.RequireNonNull
 import java.io.FileWriter
 import java.nio.file.Path
@@ -11,7 +12,6 @@ import java.nio.file.Path
 class MustacheClassGenerator {
 
     var mustacheFactory: MustacheFactory = DefaultMustacheFactory()
-
 
     fun generate(outputDir: Path, clazz: ClassDescription, config: Config): Path {
         val mustache = mustacheFactory.compile("class.mustache")
@@ -33,17 +33,24 @@ class MustacheClassGenerator {
             "isRequireNonNullUsed" to (config.checkConstructorParamsMode == RequireNonNull),
             "doesUseClassNameAsFactoryMethod" to config.doesUseClassNameAsFactoryMethod,
             "isBuilderFactoryInsideModelClass" to config.isBuilderFactoryInsideModelClass,
-            "fields" to clazz.fields.entries.map { it.key to it.value }.withIndex().map {
+            "withJson" to (clazz.json ?: false),
+            "fields" to clazz.fieldDescriptions.withIndex().map {
                 val index = it.index
-                val (name, type) = it.value
+                val field = it.value
                 mapOf(
-                    "type" to type,
-                    "name" to name,
+                    "type" to field.type,
+                    "name" to field.name,
+                    "isRequired" to isFieldRequired(clazz, field),
+                    "hasComment" to (field.comment != null),
+                    "comment" to (field.comment ?: ""),
                     "isLast" to (index == clazz.fields.size - 1),
-                    "nameInPascalCase" to name.capitalize(),
+                    "nameInPascalCase" to field.name.capitalize(),
                     "isGetPropertyWithPrefix" to !config.isGetPropertyWithoutPrefix
                 )
             }
         )
+
+    private fun isFieldRequired(clazz: ClassDescription, field: FieldDescription): Boolean =
+        clazz.required?.contains(field.name) ?: true
 
 }
