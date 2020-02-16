@@ -13,3 +13,5 @@ classes:
     required:
       - id
     equal: true
+  - name: NodeId
+    tiny: true

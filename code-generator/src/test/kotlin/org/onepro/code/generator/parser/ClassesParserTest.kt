@@ -19,8 +19,8 @@ class ClassesParserTest  {
             this.classes.shouldNotBeEmpty()
             this.classes[0] should {
                 name shouldEqual "Node"
-                fields shouldContainAll listOf("id:Long:Identifier", "title:String")
-                fieldDescriptions shouldContainAll listOf(
+                fields!! shouldContainAll listOf("id:Long:Identifier", "title:String")
+                fieldDescriptions!! shouldContainAll listOf(
                     FieldDescription(
                         name = "id",
                         type = "Long",

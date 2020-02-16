@@ -1,0 +1,66 @@
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Objects;
+import java.util.Optional;
+
+import static java.util.Objects.requireNonNull;
+
+public class {{className}} {
+
+    private final String value;
+
+    @Nonnull
+    public static {{className}} {{classNameInCamelCase}}(@Nonnull String value) {
+        return new {{className}}(value);
+    }
+
+    @Nonnull
+    public static Optional<{{className}}> optional{{className}}(@Nullable String value) {
+        return isValid(value) ? Optional.of(new {{className}}(value)) : Optional.empty();
+    }
+
+    @JsonCreator
+    private {{className}}(String value) {
+        this.value = validate(requireNonNull(value, "value"));
+    }
+
+    private static String validate(@Nonnull String value) {
+        if (isValid(value)) {
+            return value;
+        }
+        throw new RuntimeException(String.format("Invalid value: '%s'", value));
+    }
+
+    public static boolean isValid(@Nullable String value) {
+        return StringUtils.isNotEmpty(value);
+    }
+
+    @JsonValue
+    public String asString() {
+        return value;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || obj.getClass() != getClass()) {
+            return false;
+        }
+
+        {{className}} other = ({{className}}) obj;
+        return Objects.equals(value, other.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(value);
+    }
+
+    @Override
+    public String toString() {
+        return value;
+    }
+}

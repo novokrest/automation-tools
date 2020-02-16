@@ -6,12 +6,13 @@ data class ClassesDescription(
 
 data class ClassDescription(
     val name: String,
-    val fields: List<String>,
+    val fields: List<String>?,
     val required: List<String>?,
     val json: Boolean?,
-    val equal: Boolean?
+    val equal: Boolean?,
+    val tiny: Boolean?
 ) {
-    val fieldDescriptions = fields.map { parseFieldDescription(it) }
+    val fieldDescriptions = fields?.map { parseFieldDescription(it) }
 
     private fun parseFieldDescription(field: String): FieldDescription {
         val parts = field.split(":").map { it.trim() }

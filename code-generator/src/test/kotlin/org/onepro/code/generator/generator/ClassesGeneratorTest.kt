@@ -20,10 +20,11 @@ class ClassesGeneratorTest {
         val outputDir = Files.createTempDirectory("code-generator-")
         val generatedFiles = ClassesGenerator.run(inputFile, outputDir, Config())
 
-        generatedFiles.size shouldEqualTo 2
+        generatedFiles.size shouldEqualTo 3
 
         checkGeneratedFile(generatedFiles[0], "JsonNode.java")
         checkGeneratedFile(generatedFiles[1], "Node.java")
+        checkGeneratedFile(generatedFiles[2], "NodeId.java")
     }
 
     private fun checkGeneratedFile(generatedFilePath: Path, expectedFileResource: String) {

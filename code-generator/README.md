@@ -1,4 +1,4 @@
 ```bash
-./gradlew run -Dconfig=revolut
+./gradlew run -Dconfig=bb
 ./gradle run
 ```

@@ -14,17 +14,29 @@ class MustacheClassGenerator {
     private val mustacheFactory: MustacheFactory = DefaultMustacheFactory()
 
     fun generate(outputDir: Path, clazz: ClassDescription, config: Config): Path {
-        val mustache = mustacheFactory.compile("class.mustache")
+        val template = chooseTemplate(clazz, config)
+        val mustache = mustacheFactory.compile(template.resourceName)
         val classFilePath = outputDir.resolve("${clazz.name}.java")
         classWriter(classFilePath).use {
-            mustache.execute(it, templateParams(clazz, config)).flush()
+            mustache.execute(it, template.params).flush()
         }
         return classFilePath
     }
 
-    private fun classWriter(classFilePath: Path) = FileWriter(classFilePath.toFile())
+    private fun chooseTemplate(clazz: ClassDescription, config: Config): Template =
+        if (clazz.tiny == true) {
+            Template("class_tiny.mustache", tinyClassTemplateParams(clazz))
+        } else {
+            Template("class.mustache", classTemplateParams(clazz, config))
+        }
 
-    private fun templateParams(clazz: ClassDescription, config: Config): Map<String, Any> =
+    private fun tinyClassTemplateParams(clazz: ClassDescription): Map<String, Any> =
+        mapOf(
+            "className" to clazz.name,
+            "classNameInCamelCase" to clazz.name.decapitalize()
+        )
+
+    private fun classTemplateParams(clazz: ClassDescription, config: Config): Map<String, Any> =
         mapOf(
             "className" to clazz.name,
             "classNameInCamelCase" to clazz.name.decapitalize(),
@@ -35,7 +47,7 @@ class MustacheClassGenerator {
             "isBuilderFactoryInsideModelClass" to config.isBuilderFactoryInsideModelClass,
             "withJson" to (clazz.json ?: false),
             "withEquals" to (clazz.equal ?: false),
-            "fields" to clazz.fieldDescriptions.withIndex().map {
+            "fields" to clazz.fieldDescriptions!!.withIndex().map {
                 val index = it.index
                 val field = it.value
                 mapOf(
@@ -44,7 +56,7 @@ class MustacheClassGenerator {
                     "isRequired" to isFieldRequired(clazz, field),
                     "hasComment" to (field.comment != null),
                     "comment" to (field.comment ?: ""),
-                    "isLast" to (index == clazz.fields.size - 1),
+                    "isLast" to (index == clazz.fields!!.size - 1),
                     "isFirst" to (index == 0),
                     "nameInPascalCase" to field.name.capitalize(),
                     "isGetPropertyWithPrefix" to !config.isGetPropertyWithoutPrefix
@@ -55,4 +67,10 @@ class MustacheClassGenerator {
     private fun isFieldRequired(clazz: ClassDescription, field: FieldDescription): Boolean =
         clazz.required?.contains(field.name) ?: true
 
+    private fun classWriter(classFilePath: Path) = FileWriter(classFilePath.toFile())
+
+    private data class Template(
+        val resourceName: String,
+        val params: Map<String, Any?>
+    )
 }
