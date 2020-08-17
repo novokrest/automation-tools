@@ -24,6 +24,7 @@ _{component_name}_
 '''
 
 CommitMsgRegex = re.compile(r'(\w+-\d+) \[([\w\-]+)\] (.+)')
+CommitMsgWithoutTaskNumberRegex = re.compile(r'\[([\w\-]+)\] (.+)')
 
 Command = Enum('Command', 'SINGLE_COMMIT_PRS')
 
@@ -55,6 +56,14 @@ def parse_args():
         dest='commits_count',
         type=int,
         default=-1,
+        help='Commits count from start of branch'
+    )
+    parser.add_argument(
+        '-s',
+        dest='skipped_commits_count',
+        type=int,
+        default=0,
+        help='Skipped commits count from start of branch'
     )
     parser.add_argument(
         '-u',
@@ -81,13 +90,14 @@ def dispatch_command(args):
         generate_single_command_prs(
             git_dir=args.git_dir,
             commits_count=args.commits_count,
+            skipped_commits_count=args.skipped_commits_count,
             repo_owner=args.repo_owner,
             repo_name=args.repo_name
         )
     else:
         log.warning('Unexpected command: cmd=%s', args.cmd)
 
-def generate_single_command_prs(git_dir, commits_count, repo_owner, repo_name):
+def generate_single_command_prs(git_dir, commits_count, skipped_commits_count, repo_owner, repo_name):
     cur_dir = os.getcwd()
     os.chdir(git_dir)
     try:
@@ -97,7 +107,7 @@ def generate_single_command_prs(git_dir, commits_count, repo_owner, repo_name):
         branch_name = repo.active_branch.name
         auth_token = read_auth_token()
         log.info('All commits were collected: branch_name=%s, count=%s', branch_name, len(commits))
-        for commit, index in zip(commits, range(0, len(commits))):
+        for commit, index in zip(commits[skipped_commits_count:], range(skipped_commits_count, len(commits))):
             create_pr_by_commit(repo, branch_name, commit, index, auth_token, repo_owner, repo_name)
     finally:
         os.chdir(cur_dir)
@@ -174,11 +184,20 @@ def find_pr_url(branch_name, auth_token, repo_owner, repo_name):
 def parse_commit_msg(commit_msg):
     log.info('Try parse commit message: %s', commit_msg)
     m = CommitMsgRegex.match(commit_msg)
-    return CommitMsg(
-        task=m.group(1),
-        component=m.group(2),
-        msg=m.group(3).strip()
-    )
+    if (m is not None):
+        return CommitMsg(
+            task=m.group(1),
+            component=m.group(2),
+            msg=m.group(3).strip()
+        )
+    else:
+        m = CommitMsgWithoutTaskNumberRegex.match(commit_msg)
+        return CommitMsg(
+            task='',
+            component=m.group(1),
+            msg=m.group(2).strip()
+        )
+    
 
 if __name__ == '__main__':
     main()

@@ -1,4 +1,21 @@
 classes:
+- name: Link
+  fields:
+  - id:Long
+  - url:String
+  - completed:boolean
+- name: LinkAddCommandData
+  fields:
+  - url:String
+- name: AddCommandData
+  fields:
+    - title:String
+    - currentPage:Long
+    - totalPages:Long
+    - completed:Boolean
+  required:
+    - title
+    - currentPage
 - name: FullName
   fields:
     - first:String:Name
